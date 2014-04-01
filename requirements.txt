@@ -1,6 +1,5 @@
 Django==1.6.2
 Markdown==2.3.1
-PAM==0.4.2
 Pillow==2.0.0
 Pygments==1.6
 SecretStorage==1.0.0
