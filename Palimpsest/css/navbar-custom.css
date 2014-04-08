@@ -1,0 +1,24 @@
+.navbar-default {
+	background-color: #006633
+}
+
+a {
+	color: #006633
+}
+
+.navbar .nav > li  > a {
+	color: #E8E8E8
+}
+
+.navbar-default .navbar-brand {
+color: #E8E8E8
+}
+
+
+#thisMenu {
+    clear:both;
+    position:fixed;
+    bottom:5px;
+    text-align:center!important;
+    width: 100%;
+}

@@ -1,0 +1,37 @@
+.navbar-default {
+	background-color: #006633
+}
+
+a {
+	color: #006633
+}
+
+.navbar .nav > li  > a {
+	color: #E8E8E8
+}
+
+.navbar-default .navbar-brand {
+color: #E8E8E8
+}
+
+
+.sidebar-nav li a {
+  color: #006633;
+  display: block;
+  text-decoration: none;
+}
+
+#sidebar-wrapper {
+  background: #E8E8E8;
+  height: 400px;
+  width: 180px;
+}
+
+.sidebar-nav > .sidebar-brand {
+	color: #006633;
+}
+
+body {
+  min-height: 2000px;
+  padding-top: 70px;
+}
