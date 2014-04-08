@@ -79,7 +79,7 @@ DATABASES['default'] =  dj_database_url.config()
 #	   'NAME': 'simple_postgres',
  #          'USER': 'anjaliefield',
 #}
-}
+#}
 
 
 
