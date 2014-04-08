@@ -74,11 +74,11 @@ WSGI_APPLICATION = 'Palimpsest.wsgi.application'
 import dj_database_url
 #DATABASES['default'] =  dj_database_url.config()
 DATABASES = {
-      #  'default': dj_database_url.config(default=os.environ.get('DATABASE_URL')),
-        'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-	   'NAME': 'simple_postgres',
-           'USER': 'anjaliefield',
-}
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL')),
+      #  'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#	   'NAME': 'simple_postgres',
+ #          'USER': 'anjaliefield',
+#}
 }
 
 
