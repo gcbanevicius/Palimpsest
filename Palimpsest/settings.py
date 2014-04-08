@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 #    'south',
     'textview',
+    'texts',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -66,7 +67,8 @@ WSGI_APPLICATION = 'Palimpsest.wsgi.application'
 import dj_database_url
 #DATABASES['default'] =  dj_database_url.config()
 DATABASES = {
-        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+        #'default': dj_database_url.config() #default=os.environ.get('DATABASE_URL'))
+        'default': dj_database_url.config(default='postgres://gbanevic:password@localhost/simple_postgres')
 }
 
 
