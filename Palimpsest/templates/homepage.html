@@ -1,1 +1,33 @@
-Welcome to Palimpsest!
+{% load staticfiles %}
+
+
+
+<!DOCTYPE html>
+<html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Palimpsest</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'simple-sidebar.css' %}" rel="stylesheet">
+    <link href="{% static 'base-custom.css'%}" rel="stylesheet">
+    <link href="{% static 'navbar-fixed-top.css' %}" rel="stylesheet">
+
+
+  </head>
+
+  {% include "navbar_base.html" %}
+
+  Welcome to Palimpsest!
+
+  </html>

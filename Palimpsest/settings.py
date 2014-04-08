@@ -25,7 +25,7 @@ STATICFILES_DIRS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, "templates/"),
+    os.path.join(BASE_DIR, "templates"),
     os.path.join(BASE_DIR, "static/docs/examples/navbar")
 )
 
@@ -72,15 +72,13 @@ WSGI_APPLICATION = 'Palimpsest.wsgi.application'
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-DATABASES = {'default': dj_database_url.config()}
-#DATABASES['default'] =  dj_database_url.config()
-#DATABASES = {
-#        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL')),
-      #  'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#	   'NAME': 'simple_postgres',
- #          'USER': 'anjaliefield',
-#}
-#}
+#DATABASES = {'default': dj_database_url.config()}
+DATABASES = {
+        'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+	   'NAME': 'simple_postgres',
+          'USER': 'anjaliefield',
+}
+}
 
 
 
