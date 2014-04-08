@@ -18,9 +18,7 @@ def index(request):
       'name': 'Caesar',
       'gal_war_eng': Text.objects.all()
       })
-    #return HttpResponse("Hello, world!!! \nIt's me, Palimpsest ;)")
-    #arr = gal_war_eng.split('\n')
-    #arr_len = len(arr)
+
     return HttpResponse(temp.render(c))
 
 def two_text(request):
@@ -34,9 +32,7 @@ def two_text(request):
       'name': 'Caesar',
       'gal_war_eng': Text.objects.all()
       })
-    #return HttpResponse("Hello, world!!! \nIt's me, Palimpsest ;)")
-    #arr = gal_war_eng.split('\n')
-    #arr_len = len(arr)
+
     return HttpResponse(temp.render(c))
 
 
