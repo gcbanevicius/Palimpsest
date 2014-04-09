@@ -6,4 +6,8 @@ from django.views.generic import TemplateView
 
 
 def home(request):
-	return HttpResponse(render_to_response('homepage.html'))
+	 temp = loader.get_template('homepage.html')
+	 c = Context ({
+	 	'text_url': "textview/single_text"
+	 	})
+	 return HttpResponse(render_to_response('homepage.html'))
