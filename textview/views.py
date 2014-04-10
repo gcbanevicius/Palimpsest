@@ -12,6 +12,7 @@ def index(request, text_name=""):
     temp = loader.get_template('single_text.html')
     gal_war_eng = ""
     c = Context ({
+      'text_id': text_name,
       'gal_war_eng': Text.objects.all(), 
       })
 
@@ -24,7 +25,7 @@ def two_text(request, text_name=""):
     gal_war_eng = ""
 
     c = Context ({
-      'test':text_name,
+      'text_id': text_name,
       'gal_war_eng': Text.objects.all(), 
       })
 
