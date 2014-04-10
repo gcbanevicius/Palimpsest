@@ -15,9 +15,8 @@ import fake, query
 
 # Create your views here.
 
-#@csrf_exempt
 @ensure_csrf_cookie
-def index(request):
+def index(request, text_name=""):
     temp = loader.get_template('single_text.html')
     if request.method == 'GET':
 
@@ -30,46 +29,32 @@ def index(request):
             text = query.startQuery(str(form.cleaned_data['range']))
 
     c = RequestContext (request, {
-      'name': 'Caesar',
+      #'name': 'Caesar',
+      'text_id': text_name,
       'gal_war_eng': text, 
+     })
+
+    return HttpResponse(temp.render(c))
+
+
+#Corresponds to "translate" button, display two texts side by side
+def two_text(request, text_name=""):
+    temp = loader.get_template('two_text.html')
+
+    c = Context ({
+      'text_id': text_name,
+      'text_left': Text.objects.all(), 
+      'text_right': Text.objects.all()
       })
 
     return HttpResponse(temp.render(c))
 
 
-#@csrf_exempt
-@ensure_csrf_cookie
-def two_text(request):
-    # attempt at pulling in whole text file from database!
-    temp = loader.get_template('two_text.html')
-    
-    #gal_war_eng = ""
-    #for t in Text.objects.all():
-    #    gal_war_eng += t.text_field
-    #    gal_war_eng += '\n'
-    
-    # abridged way (just get one line)
-    #t = Text.objects.first()
-    #gal_war_eng = t.text_field + '\n'
+def vocab(request, text_name=""):
+    temp = loader.get_template('vocab.html')
 
-    #fake.main() 
-
-    text = Text.objects.first()
-
-    form = QueryForm(request.POST)
-    if request.method == 'POST':
-        print 'Data is:', form.data
-        if form.is_valid():
-            print 'Range is:', form.cleaned_data['range']
-            text = query.startQuery(str(form.cleaned_data['range']))
-        else:
-            print 'Nope'
-
-    print "Text is:", text
-
-    c = RequestContext (request, {
-      'name': 'Caesar',
-      'gal_war_eng': text, #Text.objects.first() #.all()
+    c = Context ({
+      'text_id': text_name,
       })
 
     return HttpResponse(temp.render(c))

@@ -4,6 +4,7 @@
 <div class="container">
 
 	<div class="row">
+<<<<<<< HEAD
 		
         <div class="col-md-5">
            {%for i in gal_war_eng %}
@@ -16,11 +17,24 @@
 	       {#{ gal_war_eng.text_field }#} 
 	    </div>
 
+=======
+
+		<div class="col-md-5">
+
+		{%for i in text_left %}
+		{{i.text_field}}
+		{% endfor %}
+
+		</div>
+
+		<div class="col-md-5">
+			{%for i in text_right %}
+			{{i.text_field}}
+			{% endfor %}
+		</div>
+>>>>>>> 1b0cfb735f90ea223d75370b345d3db797b3c1b8
 	</div>
 </div>
 
 
 {% endblock %}
-
-
-		    

@@ -6,4 +6,4 @@ from django.views.generic import TemplateView
 
 
 def home(request):
-	return HttpResponse(render_to_response('homepage.html'))
+	 return HttpResponse(render_to_response('homepage.html'))
