@@ -12,9 +12,7 @@ def index(request, text_name=""):
     temp = loader.get_template('single_text.html')
     gal_war_eng = ""
     c = Context ({
-      'name': 'Caesar',
       'gal_war_eng': Text.objects.all(), 
-      'text_url': "single_text"
       })
 
     return HttpResponse(temp.render(c))
@@ -26,9 +24,8 @@ def two_text(request, text_name=""):
     gal_war_eng = ""
 
     c = Context ({
-      'name': 'Caesar',
+      'test':text_name,
       'gal_war_eng': Text.objects.all(), 
-      'text_url': "single_text"
       })
 
     return HttpResponse(temp.render(c))
