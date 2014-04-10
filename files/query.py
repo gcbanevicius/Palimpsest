@@ -268,7 +268,9 @@ def main():
         exit(1) 
 
     # all done!
+    print q_result    
     return q_result
+    
 
 
 if __name__ == "__main__":

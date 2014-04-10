@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for i in gal_war_eng %}
+{{ i.0 }} &nbsp &nbsp &nbsp {{ i.1 }} <br>
+{% endfor %}
+
+{% endblock %}
+
+{#{ gal_war_eng.text_field}#} 

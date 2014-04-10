@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+	<div class="row">
+		
+        <div class="col-md-5">
+           {%for i in gal_war_eng %}
+		   {#{i.text_field}#}
+           {{ i.0 }} &nbsp &nbsp &nbsp {{ i.1 }}<br>
+		   {% endfor %}
+	    </div>
+
+		<div class="col-md-5">
+	       {#{ gal_war_eng.text_field }#} 
+	    </div>
+
+	</div>
+</div>
+
+
+{% endblock %}
+
+
+		    

@@ -1,21 +1,9 @@
-from django.shortcuts import render
+#from annoying.decorators import render_to
+from django.shortcuts import render_to_response
 from django.http import HttpResponse
+from django.template import loader, Context, Template
+from django.views.generic import TemplateView
 
-# Create your views here.
 
-def index(request):
-    text = "hello all!"
-    return HttpResponse(text)
-
-    # attempt at pulling in whole text file from database!
-    #gal_war_eng = ""
-    #for t in Text.objects.all():
-    #    gal_war_eng += t.text_field
-    #    gal_war_eng += '\n'
-    #    #return HttpResponse(t.text_field)
-    #response_text = "<pre>" + gal_war_eng + "</pre>"
-    #return HttpResponse(response_text) #gal_war_eng) #, content_type='text/plain')
-    #return HttpResponse("Hello, world!!! \nIt's me, Palimpsest ;)")
-    #arr = gal_war_eng.split('\n')
-    #arr_len = len(arr)
-    #return HttpResponse(arr_len)
+def home(request):
+	return HttpResponse(render_to_response('homepage.html'))

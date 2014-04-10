@@ -17,8 +17,16 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
 
+STATIC_URL = '/static/'
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'css'),
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, "templates"),
+    os.path.join(BASE_DIR, "static/docs/examples/navbar")
 )
 
 # Quick-start development settings - unsuitable for production
@@ -65,26 +73,27 @@ WSGI_APPLICATION = 'Palimpsest.wsgi.application'
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-#DATABASES['default'] =  dj_database_url.config()
-DATABASES = {
-        #'default': dj_database_url.config() #default=os.environ.get('DATABASE_URL'))
-        'default': dj_database_url.config(default='postgres://gbanevic:password@localhost/simple_postgres')
-}
-
+#DATABASES = {'default': dj_database_url.config()}
+#DATABASES = {
+#        'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#	   'NAME': 'simple_postgres',
+#          'USER': 'anjaliefield',
+#}
+#}
 
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'simple_postgres',
-#        'USER': 'gbanevic',
-#        'PASSWORD': 'password',
-#        'HOST': 'localhost',
-#    }
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'simple_postgres',
+        'USER': 'gbanevic',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
