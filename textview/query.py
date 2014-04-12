@@ -10,33 +10,33 @@ def db_connect():
     urlparse.uses_netloc.append('postgres')
     urlparse.uses_netloc.append('mysql')
 
-    try:
-        if 'DATBASES' not in locals():
-            DATABASES = {}
+    #try:
+    #    if 'DATBASES' not in locals():
+    #        DATABASES = {}
 
-        if 'DATABASE_URL' in os.environ:
-            print os.environ['DATABASE_URL']
-            url = urlparse.urlparse(os.environ['DATABASE_URL'])
+    #    if 'DATABASE_URL' in os.environ:
+    #        print os.environ['DATABASE_URL']
+    #        url = urlparse.urlparse(os.environ['DATABASE_URL'])
 
             # Ensure default database exists.
-            DATABASES['default'] = DATABASES.get('default', {})
+#            DATABASES['default'] = DATABASES.get('default', {})
 
             # Update with environment configuration.
-            DATABASES['default'].update({
-                'NAME': url.path[1:],
-                'USER': url.username,
-                'PASSWORD': url.password,
-                'HOST': url.hostname,
-                'PORT': url.
-            })
-            if url.scheme == 'postgres':
-                DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+#            DATABASES['default'].update({
+#                'NAME': url.path[1:],
+#                'USER': url.username,
+#                'PASSWORD': url.password,
+#                'HOST': url.hostname,
+#                'PORT': url.
+#            })
+#            if url.scheme == 'postgres':
+#                DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 
-            if url.scheme == 'mysql':
-                DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+            #if url.scheme == 'mysql':
+            #    DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
 
-    except Exception:
-        print 'Unexpected error:', sys.exc_info()
+    #except Exception:
+    #    print 'Unexpected error:', sys.exc_info()
     
     try:
         conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
