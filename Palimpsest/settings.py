@@ -73,7 +73,7 @@ WSGI_APPLICATION = 'Palimpsest.wsgi.application'
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-#DATABASES = {'default': dj_database_url.config()}
+DATABASES = {'default': dj_database_url.config()}
 #DATABASES = {
 #        'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #	   'NAME': 'simple_postgres',
@@ -85,15 +85,15 @@ import dj_database_url
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'simple_postgres',
-        'USER': 'gbanevic',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'simple_postgres',
+#        'USER': 'gbanevic',
+#        'PASSWORD': 'password',
+#        'HOST': 'localhost',
+#    }
+#}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
