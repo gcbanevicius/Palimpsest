@@ -6,7 +6,7 @@ import psycopg2
 
 def db_connect():
     try:
-        conn = psycopg2.connect("dbname='simple_ltree' user='gbanevic' host='localhost' password='password'")
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
     except:
         print "Could not connect to database"
     curs = conn.cursor()
