@@ -1,10 +1,19 @@
 #!/usr/bin/python
 
-import sys, re
+import sys, re, os
 import psycopg2
 
 
 def db_connect():
+
+    if 'DATABASES' not in locals():
+        DATABASES = {}
+
+    if 'DATABASE_URL' in os.environ:
+        print os.environ['DATABASE_URL']
+    else:
+        print 'no DB_URL'
+
     try:
         conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
     except:
