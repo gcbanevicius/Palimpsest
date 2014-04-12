@@ -2,18 +2,42 @@
 
 import sys, re, os
 import psycopg2
-
+import urlparse
 
 def db_connect():
 
-    if 'DATABASES' not in locals():
-        DATABASES = {}
+# Register database schemes in URLs.
+    urlparse.uses_netloc.append('postgres')
+    urlparse.uses_netloc.append('mysql')
 
-    if 'DATABASE_URL' in os.environ:
-        print os.environ['DATABASE_URL']
-    else:
-        print 'no DB_URL'
+    try:
+        if 'DATBASES' not in locals():
+            DATABASES = {}
 
+        if 'DATABASE_URL' in os.environ:
+            print os.environ['DATABASE_URL']
+            url = urlparse.urlparse(os.environ['DATABASE_URL'])
+
+            # Ensure default database exists.
+            DATABASES['default'] = DATABASES.get('default', {})
+
+            # Update with environment configuration.
+            DATABASES['default'].update({
+                'NAME': url.path[1:],
+                'USER': url.username,
+                'PASSWORD': url.password,
+                'HOST': url.hostname,
+                'PORT': url.
+            })
+            if url.scheme == 'postgres':
+                DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+
+            if url.scheme == 'mysql':
+                DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+
+    except Exception:
+        print 'Unexpected error:', sys.exc_info()
+    
     try:
         conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
     except:
