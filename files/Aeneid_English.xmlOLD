@@ -3275,7 +3275,7 @@ Changed names and redid headers.
 <l n="tr">Aurora had dispelled the dark and dew;</l>
 <l n="tr">when thus unto the ever-answering heart</l>
 <l n="tr">of her dear sister spoke the stricken Queen:</l>
-<l n="tr">“Anna, my sister, what disturbing dreams</l>
+<l n="tr"><milestone ed="P" unit="para" />“Anna, my sister, what disturbing dreams</l>
 <l n="tr">perplex me and alarm? What guest is this</l>
 <l n="tr">new-welcomed to our house? How proud his mien!</l>
 <l n="tr">What dauntless courage and exploits of war!</l>
@@ -4171,7 +4171,7 @@ Changed names and redid headers.
 <l n="tr">she knew too well, she lingered yet awhile</l>
 <l n="tr">for memory and tears, and, falling prone</l>
 <l n="tr">on that cold bed, outpoured a last farewell:</l>
-<l n="tr">“Sweet relics! Ever dear when Fate and Heaven</l>
+<l n="tr"><milestone ed="P" unit="para" />“Sweet relics! Ever dear when Fate and Heaven</l>
 <l n="tr">upon me smiled, receive my parting breath,</l>
 <l n="tr">and from my woe set free! My life is done.</l>
 <l n="tr">I have accomplished what my lot allowed;</l>
@@ -4207,7 +4207,7 @@ Changed names and redid headers.
 <l n="tr">with trembling steps, where thickest was the throng,</l>
 <l n="tr">beating her breast, while with a desperate hand</l>
 <l n="tr">she tore at her own face, and called aloud</l>
-<l n="tr">upon the dying Queen. “Was it for this</l>
+<l n="tr">upon the dying Queen. <milestone ed="P" unit="para" />“Was it for this</l>
 <l n="tr">my own true sister used me with such guile?</l>
 <l n="tr">O, was this horrid deed the dire intent</l>
 <l n="tr">of altars, Iofty couch, and funeral fires?</l>
@@ -5321,7 +5321,7 @@ Changed names and redid headers.
 <l n="tr">Safe, even as thou prayest, he shall ride</l>
 <l n="tr">to <placeName key="perseus,Cumae" authname="perseus,Cumae">Cumae</placeName>'s haven, where Avernus lies.</l>
 <l n="tr">One only sinks beneath th' engulfing seas, —</l>
-<l n="tr">one life in lieu of many.” Having soothed</l>
+<l n="tr">one life in lieu of many.” <milestone ed="P" unit="para" />Having soothed</l>
 <l n="tr">and cheered her heart divine, the worshipped sire</l>
 <l n="tr">flung o'er his mated steeds a yoke of gold,</l>
 <l n="tr">bridled the wild, white mouths, and with strong hand</l>
@@ -5614,7 +5614,7 @@ Changed names and redid headers.
 <l n="tr">Made mutual and oft-renewed surmise</l>
 <l n="tr">What comrade dead, what cold and tombless clay,</l>
 <l n="tr">The Sibyl's word would show.</l>
-<l n="tr">But as they mused,</l>
+<l n="tr"><milestone ed="P" unit="para" />But as they mused,</l>
 <l n="tr">Behold Misenus on the dry sea-sands,</l>
 <l n="tr">By hasty hand of death struck guiltless down!</l>
 <l n="tr">A son of Aeolus, none better knew</l>
@@ -6571,7 +6571,7 @@ Changed names and redid headers.
 <l n="tr">And with Sibylla, his companion sage,</l>
 <l n="tr">Up through that ivory portal lets him rise.</l>
 <l n="tr">Back to his fleet and his dear comrades all</l>
-<l n="tr">Aeneas hastes. Then hold they their straight course</l>
+<l n="tr">Aeneas hastes.<milestone ed="P" unit="para" />Then hold they their straight course</l>
 <l n="tr">Into <placeName key="perseus,Caieta" authname="perseus,Caieta">Caieta</placeName>'s bay. An anchor holds</l>
 <l n="tr">Each lofty prow; the sterns stand firm on shore.</l></div1>
 <div1 type="Book" n="7" org="uniform" sample="complete">
@@ -10046,7 +10046,7 @@ Changed names and redid headers.
 <l n="tr">far as the hairy flanks its form is man,</l>
 <l n="tr">but ends in fish below—the parting waves</l>
 <l n="tr">beneath the half-brute bosom break in foam.</l>
-<l n="tr">Such chosen chiefs in thirty galleys ploughed</l>
+<l n="tr"><milestone ed="P" unit="para" />Such chosen chiefs in thirty galleys ploughed</l>
 <l n="tr">the salt-wave, bringing help to Trojan arms.</l>
 <l n="tr"><milestone ed="p" n="215" unit="card" />Day now had left the sky. The moon benign</l>
 <l n="tr">had driven her night-wandering chariot</l>
@@ -10396,7 +10396,7 @@ Changed names and redid headers.
 <l n="tr">The flying shaft touched where the plated steel</l>
 <l n="tr">over the shoulders rose, and worked its way</l>
 <l n="tr">through the shield's rim—then falling, glanced aside</l>
-<l n="tr">from Turnus' giant body. Turnus then</l>
+<l n="tr">from Turnus' giant body. <milestone ed="p" n="479" unit="card" />Turnus then</l>
 <l n="tr">poised, without haste, his iron-pointed spear,</l>
 <l n="tr">and, launching it on Pallas, cried, “Look now</l>
 <l n="tr">will not this shaft a good bit deeper drive?”</l>
@@ -10819,7 +10819,7 @@ Changed names and redid headers.
 <l n="tr">If olden worth may win believing ear,</l>
 <l n="tr">let not my song now fail of thee to sing,</l>
 <l n="tr">thy noble deeds, thy doom of death and pain!</l>
-<l n="tr">Mezentius, now encumbered and undone,</l>
+<l n="tr"><milestone ed="P" unit="para" />Mezentius, now encumbered and undone,</l>
 <l n="tr">fell backward, trailing from the broken shield</l>
 <l n="tr">his foeman's spear. His son leaped wildly forth</l>
 <l n="tr">to join the fray; and where Aeneas' hand</l>
@@ -13097,8 +13097,7 @@ Changed names and redid headers.
 <l n="tr">Turnus stood dumb; in his pent bosom stirred</l>
 <l n="tr">shame, frenzy, sorrow, a despairing love</l>
 <l n="tr">goaded to fury, and a warrior's pride</l>
-<l n="tr">of valor proven. </l>
-<l n="tr">But when first the light</l>
+<l n="tr">of valor proven. </l><l n="tr"><milestone ed="p" n="672" unit="card" />But when first the light</l>
 <l n="tr">of reason to his blinded soul returned,</l>
 <l n="tr">he strained his flaming eyeballs to behold</l>
 <l n="tr">the distant wall, and from his chariot gazed</l>
@@ -13174,7 +13173,7 @@ Changed names and redid headers.
 <l n="tr">held scales in equipoise, and threw thereon</l>
 <l n="tr">th' unequal fortunes of the heroes twain:</l>
 <l n="tr">one to vast labors doomed and one to die.</l>
-<l n="tr">Soon Turnus, reckless of the risk, leaped forth,</l>
+<l n="tr"><milestone ed="p" n="728" unit="card" />Soon Turnus, reckless of the risk, leaped forth,</l>
 <l n="tr">upreached his whole height to his lifted sword,</l>
 <l n="tr">and struck: the Trojans and the Latins pale</l>
 <l n="tr">cried mightily, and all eyes turned one way</l>
@@ -13283,7 +13282,7 @@ Changed names and redid headers.
 <l n="tr">upon a royal house, and mix the songs</l>
 <l n="tr">of marriage and the grave: but further act</l>
 <l n="tr">I thee refuse.” Such was the word of Jove.</l>
-<l n="tr">Thus Saturn's daughter answered, drooping low</l>
+<l n="tr"><milestone ed="P" unit="para" />Thus Saturn's daughter answered, drooping low</l>
 <l n="tr">her brows divine: “Because, great Jove, I knew</l>
 <l n="tr">thy pleasure, I from yonder earth retired</l>
 <l n="tr">and Turnus' cause, tho, with unwilling mind.</l>

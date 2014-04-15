@@ -1,0 +1,14 @@
+#!/usr/bin/python
+
+import sys
+
+def startQuery(card_start, card_end):
+    print card_start, card_end
+
+def main():
+    sys.argv[1] = card_start
+    sys.argv[2] = card_end
+    startQuery(card_start, card_end)
+
+if __name__ == '__main__':
+    main()

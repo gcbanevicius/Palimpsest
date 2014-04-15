@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import xml.etree.ElementTree as ET
-tree = ET.parse('Aeneid_Latin.xml')
+tree = ET.parse('Aeneid_English.xml')
 root = tree.getroot()
 
 books_raw = root.findall('text/body/div1')
@@ -13,20 +13,16 @@ for book_raw in books_raw:
     book = []
     #card = []
     for line in lines:
-        if line.find('milestone') is not None or line.tag == 'milestone':
+        if line.tag == 'milestone':
             card_idx += 1
-        if line.text:  #line.tag == "l":
-            #print line.text
-            #card.append(line)
+        elif line.find('milestone') is not None:
+            card_idx += 1
+            #print ET.tostring(line, encoding='utf_8', method='text')
             book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
-            #book.append(line)
-        #elif len(card) > 0:
-        #    book.append(card)
-        #    card = []
+        elif line.text:  #line.tag == "l":
+            book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
     books.append(book)
 
-#print book[1]
-#print book[1][1]
 import psycopg2
 try:
     conn = psycopg2.connect("dbname='simple_ltree' user='gbanevic' host='localhost' password='password'")
@@ -55,12 +51,12 @@ for b in books:
         #print c.find('l').text
         #print l.text
         path = str(b_idx)+'.'+str(l_idx)
-        text = l[0]
-        data = (path, l[0], l[1])
-        curs.execute("""INSERT INTO aen_lat VALUES (%s, %s, %s);""", data) # % (path, text))
+        text = l #.text
+        data = (path, l[0], l[1]) #.text)
+        curs.execute("""INSERT INTO aen_eng VALUES (%s, %s, %s);""", data) # % (path, text))
 
 # let's see if we can get our data back...
-curs.execute("""SELECT * FROM aen_lat WHERE path <@ '2.7' """)
+curs.execute("""SELECT * FROM aen_eng WHERE path <@ '2.7' """)
 rows = curs.fetchall()
 #print rows
 for row in rows:

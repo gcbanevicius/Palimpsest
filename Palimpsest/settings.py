@@ -73,7 +73,8 @@ WSGI_APPLICATION = 'Palimpsest.wsgi.application'
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-DATABASES = {'default': dj_database_url.config()} #default=os.environ["DATABASE_URL"])}
+DATABASES = {'default': dj_database_url.config() }#, 'ENGINE': 'django.db.backends.postgresql_psycopg2', }  #default=os.environ["DATABASE_URL"])}
+
 #DATABASES = {
 #        'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
 #	   'NAME': 'simple_postgres',

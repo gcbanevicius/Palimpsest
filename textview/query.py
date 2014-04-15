@@ -57,7 +57,7 @@ def book(bk_start):
     query = (str(bk_start), )
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s""", query)
     lines = curs.fetchall()
-    print lines
+    #print lines
     return lines
 
 def line(ln_start):
@@ -65,7 +65,7 @@ def line(ln_start):
     query = (str(ln_start), )
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s""", query)
     line = curs.fetchall()
-    print line
+    #print line
     return line
 
 def lineToLine(start, end):
@@ -81,8 +81,8 @@ def lineToLine(start, end):
         print "Starting position is greater than ending position"
         exit(1)
 
-    print "Book range:", bk_start, bk_end
-    print "Linerange:", ln_start, ln_end
+    #print "Book range:", bk_start, bk_end
+    #print "Linerange:", ln_start, ln_end
 
     lines = []
 
@@ -126,7 +126,7 @@ def bookToBook(start, end):
         print "Starting position is greater than ending position"
         exit(1)
 
-    print "Book range:", bk_start, bk_end
+    #print "Book range:", bk_start, bk_end
     #print "Linerange:", ln_start, ln_end
 
     lines = []
@@ -170,8 +170,8 @@ def bookToLine(start, end):
         print "Starting position is greater than ending position"
         exit(1)
 
-    print "Book range:", bk_start, bk_end
-    print "Linerange:", ln_start, ln_end
+    #print "Book range:", bk_start, bk_end
+    #print "Linerange:", ln_start, ln_end
 
     lines = []
 
@@ -215,8 +215,8 @@ def lineToBook(start, end):
         print "Starting position is greater than ending position"
         exit(1)
 
-    print "Book range:", bk_start, bk_end
-    print "Linerange:", ln_start, "end" #ln_end
+    #print "Book range:", bk_start, bk_end
+    #print "Linerange:", ln_start, "end" #ln_end
 
     lines = []
 
@@ -247,7 +247,7 @@ def lineToBook(start, end):
     return lines
     
 def startQuery(queryStr):
-    print queryStr
+    #print queryStr
 
     if not queryStr:
         print "Please input a single query or query range"
@@ -255,9 +255,9 @@ def startQuery(queryStr):
 
     #query = sys.argv[1]      
     query = queryStr.replace('-', ' ')
-    print query
+    #print query
     q_list = query.split() # no options will do any whitespace
-    print q_list
+    #print q_list
     q_len = len(query.split())
 
     if q_len > 2:
@@ -267,38 +267,38 @@ def startQuery(queryStr):
     elif q_len == 2:
         match = re.match(r'^\s*\d+\s*\d+\s*$', query)
         if match:
-            print '1-1'
+            #print '1-1'
             q_result = bookToBook(q_list[0], q_list[1])
 
         match = re.match(r'^\s*\d+\.\d+\s*\d+\.\d+\s*$', query)
         if match:
-            print '2-2'
+            #print '2-2'
             q_result = lineToLine(q_list[0], q_list[1])
         
         match = re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query)
         if match:
-            print '1-2'
+            #print '1-2'
             q_result = bookToLine(q_list[0], q_list[1])
 
         match = re.match(r'^\s*\d+\.\d+\s*\d+\s*$', query)
         if match:
-            print '2-1'
-            print match.group()
-            print q_list[0] + ' and ' + q_list[1]
+            #print '2-1'
+            #print match.group()
+            #print q_list[0] + ' and ' + q_list[1]
             q_result = lineToBook(q_list[0], q_list[1])
 
 
     elif q_len == 1:
         match = re.match(r'^\s*\d+\s*$', query)
         if match:
-            print '1'
-            print match.group()
+            #print '1'
+            #print match.group()
             q_result = book(match.group())
 
         match = re.match(r'^\s*\d+\.\d+\s*$', query)
         if match:
-            print '2'
-            print match.group()
+            #print '2'
+            #print match.group()
             q_result = line(match.group())
 
     else:
@@ -306,11 +306,11 @@ def startQuery(queryStr):
         exit(1) 
 
     # all done!
-    print q_result    
+    #print q_result    
     return q_result
  
 def main():
-    print sys.argv
+    #print sys.argv
     #print len(sys.argv)
     if len(sys.argv) < 2:
         print "Please input a single query or query range"
@@ -318,9 +318,9 @@ def main():
 
     query = sys.argv[1]      
     query = query.replace('-', ' ')
-    print query
+    #print query
     q_list = query.split() # no options will do any whitespace
-    print q_list
+    #print q_list
     q_len = len(query.split())
 
     if q_len > 2:
@@ -330,38 +330,38 @@ def main():
     elif q_len == 2:
         match = re.match(r'^\s*\d+\s*\d+\s*$', query)
         if match:
-            print '1-1'
+            #print '1-1'
             q_result = bookToBook(q_list[0], q_list[1])
 
         match = re.match(r'^\s*\d+\.\d+\s*\d+\.\d+\s*$', query)
         if match:
-            print '2-2'
+            #print '2-2'
             q_result = lineToLine(q_list[0], q_list[1])
         
         match = re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query)
         if match:
-            print '1-2'
+            #print '1-2'
             q_result = bookToLine(q_list[0], q_list[1])
 
         match = re.match(r'^\s*\d+\.\d+\s*\d+\s*$', query)
         if match:
-            print '2-1'
-            print match.group()
-            print q_list[0] + ' and ' + q_list[1]
+            #print '2-1'
+            #print match.group()
+            #print q_list[0] + ' and ' + q_list[1]
             q_result = lineToBook(q_list[0], q_list[1])
 
 
     elif q_len == 1:
         match = re.match(r'^\s*\d+\s*$', query)
         if match:
-            print '1'
-            print match.group()
+            #print '1'
+            #print match.group()
             q_result = book(match.group())
 
         match = re.match(r'^\s*\d+\.\d+\s*$', query)
         if match:
-            print '2'
-            print match.group()
+            #print '2'
+            #print match.group()
             q_result = line(match.group())
 
     else:
@@ -369,7 +369,7 @@ def main():
         exit(1) 
 
     # all done!
-    print q_result    
+    #print q_result    
     return q_result
     
 
