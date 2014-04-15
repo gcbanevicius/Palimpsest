@@ -133,13 +133,14 @@
 
         function modal(linenum) {
 
+            linenum = linenum.toString();
+
             if (curr_mode == 'addcomment') {
             document.getElementById("commenthead").innerHTML="Enter comment for line " + linenum;
             $('#addComment').modal();
             linenum_global = linenum;
         }
         }
-
 
 
         function commentAdd() {         
