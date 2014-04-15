@@ -77,7 +77,7 @@ DATABASES = {'default': dj_database_url.config() }#, 'ENGINE': 'django.db.backen
 
 #DATABASES = {
 #        'default': { 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#	   'NAME': 'simple_postgres',
+#	   'NAME': 'simple_ltree',
 #          'USER': 'anjaliefield',
 #}
 #}

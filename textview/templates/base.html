@@ -18,6 +18,7 @@
     <link href="{% static 'simple-sidebar.css' %}" rel="stylesheet">
     <link href="{% static 'base-custom.css'%}" rel="stylesheet">
     <link href="{% static 'navbar-fixed-top.css' %}" rel="stylesheet">
+    <link href="{% static 'navbar-custom.css'%}" rel="stylesheet">
 
 
   </head>
@@ -34,8 +35,7 @@
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
-                <li class="sidebar-brand" id="tool-box"> Tool Box
-                </li>
+                <li id="tool-box"> <h5> Views </h5>
                 <div class="row">
                 <li>
                     <div class="col-md-8">
@@ -54,22 +54,46 @@
                 </li>
                 <li><a href="{% url 'two_text' text_name=text_id %}">View Translation</a>
                 </li>
-                <li><a href="#">Search</a>
+                <li><a href="#">View User Comments</a>
                 </li>
-                <li><a href="{% url 'vocab' text_name=text_id %}">Vocab</a>
+                <li> <h5> Modes </h5> </li>
+                <li><a id="commentary" onclick="changeMode('commentary')">Commentary</a>
                 </li>
-                <li><a href="#">Commentary</a>
+                <!--li><a id="vocab" onclick="changeMode('vocab')" href="{% url 'vocab' text_name=text_id %}">Vocab</a-->
+                <li><a id="vocab" onclick="changeMode('vocab')">Vocab</a>
                 </li>
-                <li><a href="#">User Comments</a>
-                </li>
-                <li><a href="#">Add Comment</a>
+                <li><a id="addcomment" onclick="changeMode('addcomment')">Add Comment</a>
                 </li>
 
             </ul>
         </div>
 
    </div>
-  
+
+   <!-- Modal (only appears on click)-->
+<div class="modal fade" id="addComment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Add New Comment</h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+            <div class="form-group">
+                <label for="name"><span id="commenthead"></span></label>
+                <textarea class="form-control" rows="3" id="modaltext"></textarea>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+     
   <div class="col-md-10">
   {% block content%}
   {% endblock %}
@@ -83,14 +107,53 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+
     <script type="text/javascript">
+
+        var linenum_global;
+        var curr_mode;
+
         function queryBox(e) {
             if (e.keyCode == 13) {
                 document.getElementById("tool-box").innerHTML = "Enter pushed!";
             }
             return true;
         }
+
+        function changeMode(id) {
+            curr_mode = id;
+
+            document.getElementById("commentary").style.color = '#006633';
+            document.getElementById("addcomment").style.color = '#006633';
+            document.getElementById("vocab").style.color = '#006633';
+            document.getElementById(id).style.color = '#700000';
+
+        }
+
+        function modal(linenum) {
+
+            if (curr_mode == 'addcomment') {
+            document.getElementById("commenthead").innerHTML="Enter comment for line " + linenum;
+            $('#addComment').modal();
+            linenum_global = linenum;
+        }
+        }
+
+
+
+        function commentAdd() {         
+            var newComment = document.getElementById("modaltext").value;
+            document.getElementById("modaltext").value = '';
+
+            var text_name = "{{text_id}}"
+            
+            alert(newComment);
+            alert(text_name);
+            alert(linenum_global);
+        }
+
+
     </script>
   </body>
 </html>
