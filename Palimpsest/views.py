@@ -7,3 +7,6 @@ from django.views.generic import TemplateView
 
 def home(request):
 	 return HttpResponse(render_to_response('homepage.html'))
+
+def about(request):
+	 return HttpResponse(render_to_response('about.html'))

@@ -38,6 +38,10 @@ width: 170px;
 ;
 }
 
+.special:hover {
+  color: #700000;
+  cursor:pointer;
+}
 
 input[type="button"], input[type="submit"], input[type="reset"], input[type="file"]::-webkit-file-upload-button, button {
 align-items: flex-start;

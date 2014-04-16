@@ -3,7 +3,7 @@
 {% block content %}
 
 {% for i in gal_war_eng %}
-<span id={{ i.0 }} onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp {{ i.1 }} <br>
+<span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp {{ i.1 }} <br>
 {% endfor %}
 
 {% endblock %}
