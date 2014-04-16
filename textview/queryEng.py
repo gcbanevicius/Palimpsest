@@ -56,7 +56,7 @@ def startQuery(card_start, card_end):
 
     curs = db_connect()
     query = (card_start, card_end)
-    curs.execute("""SELECT * FROM aen_eng WHERE card >= %s AND card <= %s""", query)
+    curs.execute("""SELECT * FROM aen_eng WHERE card >= %s AND card <= %s ORDER BY line_num;""", query)
     line = curs.fetchall()
     #print line
     #print "!?!?!"

@@ -55,7 +55,7 @@ def db_connect():
 def book(bk_start):
     curs = db_connect()
     query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines = curs.fetchall()
     #print lines
     return lines
@@ -63,7 +63,7 @@ def book(bk_start):
 def line(ln_start):
     curs = db_connect()
     query = (str(ln_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     line = curs.fetchall()
     #print line
     return line
@@ -88,7 +88,7 @@ def lineToLine(start, end):
 
     # get the first book
     query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
     
     # if the lines only span one book
@@ -101,12 +101,12 @@ def lineToLine(start, end):
     elif bk_end - bk_start > 1:
         for i in range(bk_start+1, bk_end):
             query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
             lines.extend(curs.fetchall())
             
     # now get the last book
     query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall()[:ln_end])
     
     #print lines
@@ -133,7 +133,7 @@ def bookToBook(start, end):
 
     # get the first book
     query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
     
     # if the lines only span one book
@@ -146,12 +146,12 @@ def bookToBook(start, end):
     elif bk_end - bk_start > 1:
         for i in range(bk_start+1, bk_end):
             query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
             lines.extend(curs.fetchall())
             
     # now get the last book
     query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
     
     #print lines
@@ -177,7 +177,7 @@ def bookToLine(start, end):
 
     # get the first book
     query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
     
     # if the lines only span one book
@@ -190,12 +190,12 @@ def bookToLine(start, end):
     elif bk_end - bk_start > 1:
         for i in range(bk_start+1, bk_end):
             query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
             lines.extend(curs.fetchall())
             
     # now get the last book
     query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall()[:ln_end])
     
     #print lines
@@ -222,7 +222,7 @@ def lineToBook(start, end):
 
     # get the first book
     query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
     
     # if the lines only span one book
@@ -235,12 +235,12 @@ def lineToBook(start, end):
     elif bk_end - bk_start > 1:
         for i in range(bk_start+1, bk_end):
             query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
             lines.extend(curs.fetchall())
             
     # now get the last book
     query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s;""", query)
+    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
     
     #print lines

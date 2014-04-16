@@ -49,7 +49,6 @@ def two_text(request, text_name=""):
     temp = loader.get_template('two_text.html')
 
     prev_range = request.session['query_range']
-    print 'query_range var:', prev_range
 
     #c = Context ({
     #  'text_id': text_name,
@@ -59,9 +58,6 @@ def two_text(request, text_name=""):
 
     #return HttpResponse(temp.render(c))
 
-    if request.is_ajax():
-        print "AJAX!"
-    
     if request.method == 'GET':
 
         # just get Book 1
@@ -69,14 +65,11 @@ def two_text(request, text_name=""):
         text_left = query.startQuery(prev_range)
         
         # now need second to last field, because of comment field
-        print text_left[0], text_left[-2]
-        print text_left[0][-2], text_left[-1][-2]
         text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
 
     elif request.method == 'POST':
         form = QueryForm(request.POST)
         if form.is_valid():
-            print "Yes, form valid"
             q_range = str(form.cleaned_data['range'])
             request.session['query_range'] = q_range
             text_left = query.startQuery(q_range)
@@ -84,13 +77,9 @@ def two_text(request, text_name=""):
         else:
             if 'query_range' in request.session:   
                 q_range = '1'
-            print "Form not valid, sorry!"
-            print "Query range:", q_range
-            #q_range = str(form.cleaned_data['range'])
             request.session['query_range'] = q_range
             text_left = query.startQuery(q_range)
             text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
-            print text_right
 
     c = RequestContext (request, {
       #'name': 'Caesar',
@@ -99,21 +88,14 @@ def two_text(request, text_name=""):
       'text_right': text_right,
      })
 
-    print "all done in two_text"
     return HttpResponse(temp.render(c))
 
 def add_comment(request, text_name=""):
     temp = loader.get_template('single_text.html')
 
     if request.is_ajax():
-        print "Add comment request is AJAX"
-        print 'Line and comment:', request.POST['comment_text'], request.POST['line']
         comment = Comment(path=request.POST['line'], user_id='1', text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
-        print comment.comment_text
-        #comment.save()
         query.insertComment(request.POST['line'], request.POST['comment_text'])
-
-    # now add logic to insert into DB (via script of some sort?)
 
     c = RequestContext(request, {
       'text_id': text_name,
@@ -136,14 +118,11 @@ def view_comments(request, text_name=""):
         request.session['query_range'] = q_range
     ###  END get Latin text  ###
 
-    print q_range
     q_range.replace('-', ' ')
     q_list = q_range.split()
-    print q_list
 
     if len(q_list) > -1:
         text_right = queryComm.startQuery(q_range)
-        print text_right
     
     elif len(q_list) == 1:
         if '.' in q_list[0]:
@@ -153,20 +132,15 @@ def view_comments(request, text_name=""):
         # it's a whole book
             start_range = q_list[0]
             end_range = int(q_list[0].split('.')[0]) + 1
-            print start_range, end_range
             text_lines = Comment.objects.filter(path__gte=start_range).filter(path__lt=end_range)
             
             text_right = []
             for text_line in text_lines:
-                print text_line.comment_text
                 text_right.append( (str(text_line.path), text_line.comment_text) )
 
-    
     else:
         text_right = ''
 
-    print text_right
-    
     c = RequestContext(request, {
       'text_id': text_name,
       'text_left': text, #Text.objects.all(), 
@@ -183,18 +157,3 @@ def vocab(request, text_name=""):
       })
 
     return HttpResponse(temp.render(c))
-
-
-
-
-############ OLD CODE ###############
-    #gal_war_eng = ""
-    #for t in Text.objects.all():
-    #    gal_war_eng += t.text_field
-    #    gal_war_eng += '\n'
-    
-    # abridged way (just get one line)
-    #t = Text.objects.first()
-    #gal_war_eng = t.text_field + '\n'
-    
- 

@@ -52,6 +52,8 @@
                     <div class="col-md-4">
                     </div>
                 </li>
+                <li><a href="{% url 'index' text_name=text_id %}">View Plain Text</a>
+                </li>
                 <li><a href="{% url 'two_text' text_name=text_id %}">View Translation</a>
                 </li>
                 <li><a href="{% url 'view_comments' text_name=text_id %}">View User Comments</a>
@@ -82,13 +84,38 @@
         <form role="form">
             <div class="form-group">
                 <label for="name"><span id="commenthead"></span></label>
-                <textarea class="form-control" rows="3" id="modaltext"></textarea>
+                <textarea class="form-control" rows="3" id="commentmodaltext"></textarea>
             </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+   <!-- Vocab Modal (only appears on click)-->
+<div class="modal fade" id="vocab" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="vocabModalLabel">Vocab Lookup</h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+            <div class="form-group">
+                <label for="name"><span id="vocabhead"></span></label>
+                <textarea class="form-control" rows="3" id="vocabmodaltext"></textarea>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="vocabLookup()">Save changes</button>
       </div>
     </div>
   </div>
@@ -112,7 +139,7 @@
     <script type="text/javascript">
 
         var linenum_global;
-        var curr_mode;
+        var curr_mode = "None";
 
         function queryBox(e) {
             if (e.keyCode == 13) {
@@ -122,12 +149,26 @@
         }
 
         function changeMode(id) {
-            curr_mode = id;
 
             document.getElementById("commentary").style.color = '#006633';
             document.getElementById("addcomment").style.color = '#006633';
             document.getElementById("vocab").style.color = '#006633';
-            document.getElementById(id).style.color = '#700000';
+
+            if (curr_mode == id) {
+                curr_mode = "None";
+            }
+            else {
+                curr_mode = id;
+                document.getElementById(id).style.color = '#700000';
+            }
+
+            if (curr_mode != "None") {
+                $('.linenumber').addClass('special');
+            }
+
+            else {
+                $('.linenumber').removeClass('special');
+            }
 
         }
 
@@ -139,6 +180,13 @@
         document.getElementById("commenthead").innerHTML="Enter comment for line " + linenum;
         $('#addComment').modal();
         linenum_global = linenum;
+        }
+
+        if (curr_mode == "vocab") {
+            alert('sorry, this function is not yet available!')
+           // document.getElementById("vocabhead").innerHTML="Somehow look up vocab?";
+           // $('#vocab').modal();
+
         }
         }
 
@@ -162,8 +210,8 @@
 
 
         function commentAdd() {         
-        var newComment = document.getElementById("modaltext").value;
-        document.getElementById("modaltext").value = '';
+        var newComment = document.getElementById("commentmodaltext").value;
+        document.getElementById("commentmodaltext").value = '';
 	
         var text_name = "{{text_id}}"
         
@@ -189,6 +237,9 @@
 			    }
 
 
+        function vocabLookup() {
+            alert ("sorry, this feature is not yet available");
+        }
 
     </script>
   </body>
