@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import TemplateView
 from django.template import loader, Context, Template
 
@@ -91,63 +91,69 @@ def two_text(request, text_name=""):
     return HttpResponse(temp.render(c))
 
 def add_comment(request, text_name=""):
-    temp = loader.get_template('single_text.html')
+    if request.user.is_authenticated():
+        temp = loader.get_template('single_text.html')
 
-    if request.is_ajax():
-        comment = Comment(path=request.POST['line'], user_id='1', text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
-        query.insertComment(request.POST['line'], request.POST['comment_text'])
+        if request.is_ajax():
+            comment = Comment(path=request.POST['line'], user_id='1', text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+            query.insertComment(request.POST['line'], request.POST['comment_text'])
 
-    c = RequestContext(request, {
-      'text_id': text_name,
-      'text_left': '',#Text.objects.all(), 
-      'text_right': '',#Text.objects.all()
-      })
+        c = RequestContext(request, {
+          'text_id': text_name,
+          'text_left': '',#Text.objects.all(), 
+          'text_right': '',#Text.objects.all()
+          })
 
-    return HttpResponse(temp.render(c))
+        return HttpResponse(temp.render(c))
+    else:
+        return HttpResponseRedirect('/subscribers/signin')    
 
 def view_comments(request, text_name=""):
-    temp = loader.get_template('view_comments.html')
+    if request.user.is_authenticated():    
+        temp = loader.get_template('view_comments.html')
 
-    ###  BEGIN get Latin text  ###
-    if 'query_range' in request.session:
-        q_range = request.session['query_range']
-        text = query.startQuery(q_range)
-    else:
-        text = query.startQuery('1')
-        q_range = '1'
-        request.session['query_range'] = q_range
-    ###  END get Latin text  ###
-
-    q_range.replace('-', ' ')
-    q_list = q_range.split()
-
-    if len(q_list) > -1:
-        text_right = queryComm.startQuery(q_range)
-    
-    elif len(q_list) == 1:
-        if '.' in q_list[0]:
-        # it's a single line
-            text_right =  Comment.objects.filter(path=q_list[0])[0].comment_text
+        ###  BEGIN get Latin text  ###
+        if 'query_range' in request.session:
+            q_range = request.session['query_range']
+            text = query.startQuery(q_range)
         else:
-        # it's a whole book
-            start_range = q_list[0]
-            end_range = int(q_list[0].split('.')[0]) + 1
-            text_lines = Comment.objects.filter(path__gte=start_range).filter(path__lt=end_range)
-            
-            text_right = []
-            for text_line in text_lines:
-                text_right.append( (str(text_line.path), text_line.comment_text) )
+            text = query.startQuery('1')
+            q_range = '1'
+            request.session['query_range'] = q_range
+        ###  END get Latin text  ###
 
+        q_range.replace('-', ' ')
+        q_list = q_range.split()
+
+        if len(q_list) > -1:
+            text_right = queryComm.startQuery(q_range)
+        
+        elif len(q_list) == 1:
+            if '.' in q_list[0]:
+            # it's a single line
+                text_right =  Comment.objects.filter(path=q_list[0])[0].comment_text
+            else:
+            # it's a whole book
+                start_range = q_list[0]
+                end_range = int(q_list[0].split('.')[0]) + 1
+                text_lines = Comment.objects.filter(path__gte=start_range).filter(path__lt=end_range)
+                
+                text_right = []
+                for text_line in text_lines:
+                    text_right.append( (str(text_line.path), text_line.comment_text) )
+
+        else:
+            text_right = ''
+
+        c = RequestContext(request, {
+          'text_id': text_name,
+          'text_left': text, #Text.objects.all(), 
+          'text_right': text_right, #Text.objects.all()
+        })
+
+        return HttpResponse(temp.render(c))
     else:
-        text_right = ''
-
-    c = RequestContext(request, {
-      'text_id': text_name,
-      'text_left': text, #Text.objects.all(), 
-      'text_right': text_right, #Text.objects.all()
-    })
-
-    return HttpResponse(temp.render(c))
+        return HttpResponseRedirect('/subscribers/signin')
 
 def vocab(request, text_name=""):
     temp = loader.get_template('vocab.html')

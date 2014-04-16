@@ -28,6 +28,15 @@
                   <li><a href="#">One more separated link</a></li-->
                 </ul>
               </li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'subscribers.views.signout' %}">Logout</a></li>
+          </ul>
+          <a class="navbar-brand pull-right" href="#"> Hello {{user.username}}!</a>
+          {% else %}
+          <li><a href="{% url 'subscribers.views.signin' %}">Login</a></li>
+          </ul>
+          <a class="navbar-brand pull-right" href="{% url 'subscribers.views.signup' %}"> Sign up!</a>
+          {% endif %}
           </div>
         </div><!--/.nav-collapse -->
       </div>
