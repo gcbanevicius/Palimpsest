@@ -35,10 +35,14 @@ def index(request, text_name=""):
             text = query.startQuery(q_range)
             request.session['query_range'] = q_range
 
+    newtext = []
+    for i in text:
+        newtext.append((i[0], i[2].split()))
+
     c = RequestContext (request, {
       #'name': 'Caesar',
       'text_id': text_name,
-      'gal_war_eng': text, 
+      'text_lines': newtext
      })
 
     return HttpResponse(temp.render(c))
@@ -81,10 +85,16 @@ def two_text(request, text_name=""):
             text_left = query.startQuery(q_range)
             text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
 
+
+    newleft = []
+    for i in text_left:
+        newleft.append((i[0], i[2].split()))
+
+
     c = RequestContext (request, {
       #'name': 'Caesar',
       'text_id': text_name,
-      'text_left': text_left, 
+      'text_left': newleft, 
       'text_right': text_right,
      })
 
@@ -145,10 +155,16 @@ def view_comments(request, text_name=""):
         else:
             text_right = ''
 
-        c = RequestContext(request, {
-          'text_id': text_name,
-          'text_left': text, #Text.objects.all(), 
-          'text_right': text_right, #Text.objects.all()
+        newleft = []
+        for i in text:
+            newleft.append((i[0], i[2].split()))
+
+
+        c = RequestContext (request, {
+        #'name': 'Caesar',
+        'text_id': text_name,
+        'text_left': newleft, 
+        'text_right': text_right,
         })
 
         return HttpResponse(temp.render(c))

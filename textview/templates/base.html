@@ -43,7 +43,7 @@
                             <!-- in a perfect world, I'd do this in AJAX, but the form action is what workd -->
                             <form action="." method="POST">{% csrf_token %}
                             {{ form.as_p }}
-                                <input type="text" class="form-control" name="range" /> <!-- onkeypress="queryBox(event)" /> --><br/>
+                                <input type="text" class="form-control" name="range" placeholder="e.g. 1.10-1.15"/> <!-- onkeypress="queryBox(event)" /> --><br/>
                                 <input type="submit" value="Submit" />
                             </form>
                         </div>
@@ -58,11 +58,11 @@
                 </li>
                 <li><a href="{% url 'view_comments' text_name=text_id %}">View User Comments</a>
                 </li>
-                <li> <h5> Modes </h5> </li>
+                <li> <h5> Tools </h5> </li>
                 <li><a id="commentary" onclick="changeMode('commentary')">Commentary</a>
                 </li>
                 <!--li><a id="vocab" onclick="changeMode('vocab')" href="{% url 'vocab' text_name=text_id %}">Vocab</a-->
-                <li><a id="vocab" onclick="changeMode('vocab')">Vocab</a>
+                <li><a id="vocab" onclick="vocabToggle()">Vocab</a>
                 </li>
                 <li><a id="addcomment" onclick="changeMode('addcomment')">Add Comment</a>
                 </li>
@@ -134,12 +134,14 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="{% static 'js/tooltip.js' %}"></script>
     <script src="{% static 'docs/dist/js/bootstrap.min.js' %}"></script>
 
     <script type="text/javascript">
 
         var linenum_global;
         var curr_mode = "None";
+        var vocab_on = 0;
 
         function queryBox(e) {
             if (e.keyCode == 13) {
@@ -152,7 +154,6 @@
 
             document.getElementById("commentary").style.color = '#006633';
             document.getElementById("addcomment").style.color = '#006633';
-            document.getElementById("vocab").style.color = '#006633';
 
             if (curr_mode == id) {
                 curr_mode = "None";
@@ -169,6 +170,8 @@
             else {
                 $('.linenumber').removeClass('special');
             }
+
+            if (curr_mode == "vocab") vocab_on = 1;
 
         }
 
@@ -236,9 +239,51 @@
 
 			    }
 
+        function vocabToggle() {
+            if (vocab_on == 0) {
+                vocab_on = 1;
+                document.getElementById("vocab").style.color = '#700000';
+                $('.lat_word').addClass('special');
+                $(".lat_word").popover('enable');
+            }
+            else {
+                vocab_on = 0;
+                document.getElementById("vocab").style.color = '#006633';
+                $('.lat_word').removeClass('special');
+                $(".lat_word").popover('hide');
+                $(".lat_word").popover('disable');
+            }
 
-        function vocabLookup() {
-            alert ("sorry, this feature is not yet available");
+
+        }
+
+
+$(function ()  
+{ 
+    $(".lat_word").popover({html:true, content:vocabLookup});  
+$(".lat_word").popover('disable'); 
+});
+
+        function vocabLookup(word) {
+
+            if (vocab_on == 1) {
+                var william = '<iframe src="http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword='
+               /* var perseus = "http://www.perseus.tufts.edu/hopper/morph?l="
+                var my_url = perseus.concat(String($(this).attr('id')));
+                my_url = my_url.concat("&la=la")
+                '
+
+            $('#testing1').load('http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword=eum');*/
+            //william = william.concat(word)
+            var halfway = william.concat(String($(this).attr('id')));
+
+            var retVal = halfway.concat('"></iframe>');
+
+                return retVal;
+
+        }
+
+
         }
 
     </script>
