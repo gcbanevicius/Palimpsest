@@ -42,27 +42,14 @@ def parseText(fileName):
     
     for b in books:
         b_idx += 1
-    #path = str(b_idx)
-    #data = (path,)
-    #curs.execute("""INSERT INTO aen_lat (path) VALUES (%s);""", data)
-
-    #c_idx = 0
-    #for c in b:
-    #    c_idx += 1
-    #    path = str(b_idx)+'.'+str(c_idx)
-    #    data = (path,)
-    #    curs.execute("""INSERT INTO aen_lat (path) VALUES (%s);""", data)
-
         l_idx = 0
         for l in b:
             l_idx += 1
             line_num += 1
-        #print c.find('l').text
-        #print l.text
             path = str(b_idx)+'.'+str(l_idx)
             text = l[0]
             data = (path, line_num, l[0], l[1])
-            curs.execute("""INSERT INTO aen_lat VALUES (%s, %s, %s, %s);""", data) # % (path, text))
+            #curs.execute("""INSERT INTO aen_lat VALUES (%s, %s, %s, %s);""", data) # % (path, text))
 
 # let's see if we can get our data back...
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ '2.7' """)

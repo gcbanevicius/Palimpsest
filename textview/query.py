@@ -41,8 +41,8 @@ def db_connect():
         print 'Unexpected error:', sys.exc_info()
     
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
@@ -79,7 +79,7 @@ def lineToLine(start, end):
 
     if int(bk_start) > int(bk_end):
         print "Starting position is greater than ending position"
-        exit(1)
+        ##exit(1)
 
     #print "Book range:", bk_start, bk_end
     #print "Linerange:", ln_start, ln_end
@@ -97,8 +97,11 @@ def lineToLine(start, end):
         #print lines
         return lines 
 
+    else:
+        lines = lines[ln_start-1 : ]
+
     # if there's at least one full book between them
-    elif bk_end - bk_start > 1:
+    if bk_end - bk_start > 1:
         for i in range(bk_start+1, bk_end):
             query = (str(i), )
             curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
@@ -124,7 +127,7 @@ def bookToBook(start, end):
     # equality OK; strange to query one book as a range, but acceptable
     if int(bk_start) > int(bk_end):
         print "Starting position is greater than ending position"
-        exit(1)
+        ##exit(1)
 
     #print "Book range:", bk_start, bk_end
     #print "Linerange:", ln_start, ln_end
@@ -138,7 +141,6 @@ def bookToBook(start, end):
     
     # if the lines only span one book
     if bk_start == bk_end:
-        #lines = lines[ln_start-1 : ln_end]
         #print lines
         return lines 
 
@@ -168,7 +170,7 @@ def bookToLine(start, end):
 
     if int(bk_start) > int(bk_end):
         print "Starting position is greater than ending position"
-        exit(1)
+        ##exit(1)
 
     #print "Book range:", bk_start, bk_end
     #print "Linerange:", ln_start, ln_end
@@ -213,10 +215,10 @@ def lineToBook(start, end):
     # note special case that even equality means start pos is too large
     if int(bk_start) >= int(bk_end):
         print "Starting position is greater than ending position"
-        exit(1)
+        ##exit(1)
 
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, "end" #ln_end
+    print "Book range:", bk_start, bk_end
+    print "Linerange:", ln_start
 
     lines = []
 
@@ -224,10 +226,11 @@ def lineToBook(start, end):
     query = (str(bk_start), )
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
-    
+    lines = lines[ln_start-1 : ]
+   
     # if the lines only span one book
     if bk_start == bk_end:
-        lines = lines[ln_start-1 : ]
+        #lines = lines[ln_start-1 : ]
         #print lines
         return lines 
 
@@ -243,7 +246,7 @@ def lineToBook(start, end):
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
     
-    #print lines
+    #print lines, '!?-!?'
     return lines
     
 def startQuery(queryStr):
@@ -251,7 +254,7 @@ def startQuery(queryStr):
 
     if not queryStr:
         print "Please input a single query or query range"
-        exit(1)
+        ##exit(1)
 
     #query = sys.argv[1]      
     query = queryStr.replace('-', ' ')
@@ -262,7 +265,7 @@ def startQuery(queryStr):
 
     if q_len > 2:
         print "Please limit query to single index or range of two"
-        exit(1)
+        ##exit(1)
 
     elif q_len == 2:
         match = re.match(r'^\s*\d+\s*\d+\s*$', query)
@@ -303,7 +306,7 @@ def startQuery(queryStr):
 
     else:
         print "Please input a query"
-        exit(1) 
+        ##exit(1) 
 
     # all done!
     #print q_result    
@@ -345,8 +348,8 @@ def insertComment(lineNum, commentText):
  
 
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
@@ -363,7 +366,7 @@ def main():
     #print len(sys.argv)
     if len(sys.argv) < 2:
         print "Please input a single query or query range"
-        exit(1)
+        ##exit(1)
 
     query = sys.argv[1]      
     query = query.replace('-', ' ')
@@ -374,7 +377,7 @@ def main():
 
     if q_len > 2:
         print "Please limit query to single index or range of two"
-        exit(1)
+        ##exit(1)
 
     elif q_len == 2:
         match = re.match(r'^\s*\d+\s*\d+\s*$', query)
@@ -415,7 +418,7 @@ def main():
 
     else:
         print "Please input a query"
-        exit(1) 
+        #exit(1) 
 
     # all done!
     #print q_result    

@@ -4,8 +4,13 @@ import sys, re, os
 import psycopg2
 import urlparse
 
-def db_connect():
+def getDecimal(numString):
+    return int(numString.split('.')[-1]) 
 
+def getInteger(numString):
+    return int(numString.split('.')[0]) 
+
+def db_connect():
 # Register database schemes in URLs.
     urlparse.uses_netloc.append('postgres')
     urlparse.uses_netloc.append('mysql')
@@ -41,8 +46,8 @@ def db_connect():
         print 'Unexpected error:', sys.exc_info()
     
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
@@ -71,30 +76,33 @@ def line(ln_start):
 def lineToLine(start, end):
     curs = db_connect()
     
-    bk_start = int(start.split('.')[0])
-    bk_end = int(end.split('.')[0])
+    bk_start = getInteger(start) #int(start.split('.')[0])
+    bk_end = getInteger(end) #int(end.split('.')[0])
 
-    ln_start = int(start.split('.')[1])
-    ln_end = int(end.split('.')[1])
+    ln_start = getDecimal(start) #int(start.split('.')[1])
+    ln_end = getDecimal(end) #int(end.split('.')[1])
 
     if int(bk_start) > int(bk_end):
         print "Starting position is greater than ending position"
         exit(1)
 
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, ln_end
+    print "Book range:", bk_start, bk_end
+    print "Linerange:", ln_start, ln_end
 
     lines = []
 
     # get the first book
     query = (str(bk_start), )
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    #print curs.fetchall()
     lines.extend(curs.fetchall())
-    
+    #print lines, '!?!'
+    lines = [ line for line in lines if getDecimal(line[0]) >= ln_start ]
+
     # if the lines only span one book
     if bk_start == bk_end:
-        lines = lines[ln_start-1 : ln_end]
-        #print lines
+        # behold the CORRECT way to do things
+        lines = [ line for line in lines if getDecimal(line[0]) <= ln_end ]
         return lines 
 
     # if there's at least one full book between them
@@ -103,12 +111,16 @@ def lineToLine(start, end):
             query = (str(i), )
             curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
             lines.extend(curs.fetchall())
+            lines = [ line for line in lines if getInteger(line[0]) > bk_start or getDecimal(line[0]) >= ln_start ]
+
             
     # now get the last book
     query = (str(bk_end), )
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
     lines.extend(curs.fetchall()[:ln_end])
-    
+    lines = [ line for line in lines if getInteger(line[0]) < bk_end or getDecimal(line[0]) <= ln_end ]
+    #lines = [ line for line in lines if int(line[0].split('.')[-1]) <= ln_end ]
+     
     #print lines
     return lines
 
@@ -138,8 +150,6 @@ def bookToBook(start, end):
     
     # if the lines only span one book
     if bk_start == bk_end:
-        #lines = lines[ln_start-1 : ln_end]
-        #print lines
         return lines 
 
     # if there's at least one full book between them
@@ -183,6 +193,7 @@ def bookToLine(start, end):
     # if the lines only span one book
     if bk_start == bk_end:
         lines = lines[: ln_end]
+        lines = [ line for line in lines if getDecimal(line[0]) >= ln_start and getDecimal(line[0]) <= ln_end ]
         #print lines
         return lines 
 
@@ -197,6 +208,7 @@ def bookToLine(start, end):
     query = (str(bk_end), )
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
     lines.extend(curs.fetchall()[:ln_end])
+    lines = [ line for line in lines if getInteger(line[0]) < bk_end or getDecimal(line[0]) <= ln_end ]
     
     #print lines
     return lines
@@ -206,6 +218,11 @@ def lineToBook(start, end):
     
     bk_start = int(start.split('.')[0])
     bk_end = int(end) #int(end.split('.')[0])
+
+    # this is technically invalid
+    if bk_start == bk_end:
+        print "Starting position is greater than ending position"
+        exit(1)
 
     ln_start = int(start.split('.')[1])
     #ln_end = int(end.split('.')[1])
@@ -224,10 +241,11 @@ def lineToBook(start, end):
     query = (str(bk_start), )
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
     lines.extend(curs.fetchall())
+    lines = [ line for line in lines if getDecimal(line[0]) >= ln_start ]
     
     # if the lines only span one book
     if bk_start == bk_end:
-        lines = lines[ln_start-1 : ]
+        #lines = lines[ln_start-1 : ]
         #print lines
         return lines 
 

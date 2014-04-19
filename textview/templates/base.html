@@ -41,7 +41,7 @@
                     <div class="col-md-8">
                         <div class="input-group">
                             <!-- in a perfect world, I'd do this in AJAX, but the form action is what workd -->
-                            <form action="." method="POST">{% csrf_token %}
+                            <form action="" method="POST">{% csrf_token %}
                             {{ form.as_p }}
                                 <input type="text" class="form-control" name="range" /> <!-- onkeypress="queryBox(event)" /> --><br/>
                                 <input type="submit" value="Submit" />
@@ -197,35 +197,39 @@
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) { 
 			    var cookie = jQuery.trim(cookies[i]);
-			    // Does this cookie string begin with the name we want?
+			    
+                // Does this cookie string begin with the name we want?
 			    if (cookie.substring(0, name.length + 1) == (name + '=')) {
 	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
 		            break;
 			    }
-			    }
-			    }
-			    return cookieValue;
-			    }
+			}
+		}
+		return cookieValue;
+	}
 			    
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
 
-
-        function commentAdd() {         
+    function commentAdd() {         
         var newComment = document.getElementById("commentmodaltext").value;
         document.getElementById("commentmodaltext").value = '';
 	
         var text_name = "{{text_id}}"
         
-        alert(newComment + '; ' + text_name +  '; ' + linenum_global);
-        //alert(newComment);
-        //alert(text_name);
-        //alert(linenum_global);
+        alert('Comment is:\n' + newComment + '\n\nOn text: ' + text_name +  '; ' + linenum_global);
 
 			    var csrftoken = getCookie('csrftoken');
 			    
 			    $.ajaxSetup({
-			    beforeSend: function(xhr, settings) {
-			    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			    }
+			        crossDomain: false, // obviates need for sameOrigin test
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type)) {
+			                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			            }
+                    }
 			    });
 
 			    $.ajax({
@@ -234,7 +238,7 @@
 			    data: {'text_name': text_name, 'comment_text': newComment, 'line': linenum_global },
 		    });
 
-			    }
+	}
 
 
         function vocabLookup() {
