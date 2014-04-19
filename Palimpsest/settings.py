@@ -56,6 +56,7 @@ INSTALLED_APPS = (
 #    'south',
     'textview',
     'texts',
+    'subscribers'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -86,15 +87,25 @@ DATABASES = {'default': dj_database_url.config() }#, 'ENGINE': 'django.db.backen
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'simple_ltree', #'simple_postgres',
-        'USER': 'gbanevic',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'simple_ltree', #'simple_postgres',
+#        'USER': 'gbanevic',
+#        'PASSWORD': 'password',
+#        'HOST': 'localhost',
+#    }
+#}
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'simple_ltree', #'simple_postgres',
+#        'USER': 'nik1tako',
+#        'PASSWORD': 'password',
+#        'HOST': 'localhost',
+#    }
+#}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
