@@ -28,8 +28,8 @@
 {% include "navbar_base.html" %}
 
     <div class="container">
-
-     <div class="row">
+    
+    <div class="row">
     <div class="col-md-2">
 
         <!-- Sidebar -->
@@ -58,6 +58,9 @@
                 </li>
                 <li><a href="{% url 'view_comments' text_name=text_id %}">View User Comments</a>
                 </li>
+                <li><a href="{% url 'view_critical' text_name=text_id %}">View Commentary</a>
+                </li>
+
                 <li> <h5> Tools </h5> </li>
                 <li><a id="commentary" onclick="changeMode('commentary')">Commentary</a>
                 </li>
@@ -291,5 +294,6 @@ $(".lat_word").popover('disable');
         }
 
     </script>
+
   </body>
 </html>
