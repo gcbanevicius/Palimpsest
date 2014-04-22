@@ -207,3 +207,57 @@ def vocab(request, text_name=""):
       })
 
     return HttpResponse(temp.render(c))
+    
+    
+def view_critical(request, text_name=""):
+    if request.user.is_authenticated():    
+        temp = loader.get_template('view_critical.html')
+
+        ###  BEGIN get Latin text  ###
+        if request.method == 'POST':
+            print 'Post it!'
+            form = QueryForm(request.POST)
+            if form.is_valid():
+                q_range = str(form.cleaned_data['range'])
+                request.session['query_range'] = q_range
+            else:
+                if 'query_range' in request.session:   
+                    q_range = request.session['query_range'] 
+                else:
+                    q_range = '1'
+                    request.session['query_range'] = q_range
+
+        elif request.method == 'GET':
+            print 'Get it!'
+            if 'query_range' in request.session:
+                q_range = request.session['query_range']
+            else:
+                q_range = '1'
+                request.session['query_range'] = q_range
+    
+        text_left = query.startQuery(q_range)
+    ###  END get Latin text  ###
+
+        print text_left
+
+        q_range.replace('-', ' ')
+        q_list = q_range.split()
+
+        text_right = queryComm.startQuery(q_range)
+
+        newleft = []
+        for i in text_left:
+            newleft.append((i[0], i[2].split()))
+
+        c = RequestContext (request, {
+        #'name': 'Caesar',
+            'text_id': text_name,
+            'text_left': newleft, 
+            #'text_right': text_right,
+        })
+
+        return HttpResponse(temp.render(c))
+    else:
+        return HttpResponseRedirect('/subscribers/signin')
+
+
