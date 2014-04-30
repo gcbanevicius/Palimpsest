@@ -209,7 +209,7 @@ def vocab(request, text_name=""):
     return HttpResponse(temp.render(c))
     
     
-def view_critical(request, text_name=""):
+def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
     if request.user.is_authenticated():    
         temp = loader.get_template('view_critical.html')
 
@@ -252,7 +252,8 @@ def view_critical(request, text_name=""):
         c = RequestContext (request, {
         #'name': 'Caesar',
             'text_id': text_name,
-            'text_left': newleft, 
+            'text_left': newleft,
+            'isbn': isbn_num, 
             #'text_right': text_right,
         })
 

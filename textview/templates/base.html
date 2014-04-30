@@ -58,16 +58,15 @@
                 </li>
                 <li><a href="{% url 'view_comments' text_name=text_id %}">View User Comments</a>
                 </li>
-                <li><a href="{% url 'view_critical' text_name=text_id %}">View Commentary</a>
+                <li><a class="handhover" id=viewcritical onclick="viewcommentary()">View Commentary</a>
                 </li>
 
                 <li> <h5> Tools </h5> </li>
-                <li><a id="commentary" onclick="changeMode('commentary')">Commentary</a>
-                </li>
+
                 <!--li><a id="vocab" onclick="changeMode('vocab')" href="{% url 'vocab' text_name=text_id %}">Vocab</a-->
-                <li><a id="vocab" onclick="vocabToggle()">Vocab</a>
+                <li><a id="vocab" class="handhover" onclick="vocabToggle()">Vocab</a>
                 </li>
-                <li><a id="addcomment" onclick="changeMode('addcomment')">Add Comment</a>
+                <li><a id="addcomment" class="handhover" onclick="changeMode('addcomment')">Add Comment</a>
                 </li>
 
             </ul>
@@ -100,25 +99,33 @@
 </div>
 
 
-   <!-- Vocab Modal (only appears on click)-->
-<div class="modal fade" id="vocab" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <!-- Modal to search for Googlebook (only appears on click)-->
+<div class="modal fade" id="searchbook" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="vocabModalLabel">Vocab Lookup</h4>
+        <h4 class="modal-title" id="searchbar">Google Book Selection</h4>
       </div>
       <div class="modal-body">
-        <form role="form">
-            <div class="form-group">
-                <label for="name"><span id="vocabhead"></span></label>
-                <textarea class="form-control" rows="3" id="vocabmodaltext"></textarea>
-            </div>
-        </form>
+            <label for="name"><span id="bookhead"></span></label>
+
+                <form>
+                    <div class="form-group">
+                    <label for="name">Book Search</label>
+                    <input type="text" class="form-control" id="googleval" 
+                    placeholder="Enter item to search for">
+                    </div>
+                    <button type="button" onclick=googlesearch("{% url 'view_critical' text_name=text_id isbn_num='12345' %}") class="btn btn-default">Submit</button>
+                </form>
+
+      </div>
+      <div id="searchresults" class="searchdisplay">
+            <li id="resultslist"></li>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="vocabLookup()">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
       </div>
     </div>
   </div>
@@ -155,7 +162,6 @@
 
         function changeMode(id) {
 
-            document.getElementById("commentary").style.color = '#006633';
             document.getElementById("addcomment").style.color = '#006633';
 
             if (curr_mode == id) {
@@ -290,6 +296,70 @@ $(".lat_word").popover('disable');
 
         }
 
+
+        }
+
+                function viewcommentary() {
+            $('#searchbook').modal({backdrop: 'static', keyboard:false});
+        }
+
+        function googlesearch(url) {
+            var search_text = document.getElementById("googleval").value
+
+            var xmlHttp = null;
+
+            xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", 'https://www.googleapis.com/books/v1/volumes?q=' + search_text, false );
+            xmlHttp.send( null );
+            //var tokener = new JSONTokener(xmlHttp.responseText);
+            var response = xmlHttp.responseText;
+            //alert(response)
+
+            var jsonobj = $.parseJSON(response);
+
+            var stringy = "";
+
+            var results = document.getElementById("resultslist");
+
+            for (var i = 0; i < 30; i++) {
+                /*newval = "<li>".concat(jsonobj.items[i].volumeInfo.title);
+                newval = newval.concat("</li>")
+                document.getElementById("searchresults").innerHTML = 
+                document.getElementById("searchresults").innerHTML.concat(newval); */
+
+            var newitem = document.createElement("li");
+
+            var newspan = document.createElement("a");
+
+            var itemtext = document.createTextNode(jsonobj.items[i].volumeInfo.title);
+
+            //newspan.setAttribute("onclick","alert('hi')");
+            var isbn = 'ISBN:' + jsonobj.items[i].volumeInfo.industryIdentifiers[0].identifier;
+
+            var part1 = 'http://0.0.0.0:5000/textview/view_critical/GallicWars/';
+            var part2 = 'ISBN:9781416996019';
+
+            var attrib = part1 + isbn;
+            //var url = urls.view_critical("GallicWars", isbn);
+//ISBN:1909254150'
+
+            newspan.setAttribute("href", url.replace('12345', isbn));  
+
+            newspan.appendChild(itemtext);
+
+            newitem.appendChild(newspan);
+
+            results.appendChild(newitem);
+
+            }
+
+
+
+            //document.getElementById("searchresults").innerHTML = stringy;
+
+            //resultslist
+
+            alert('hi');
 
         }
 
