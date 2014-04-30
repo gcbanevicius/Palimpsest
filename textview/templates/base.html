@@ -116,16 +116,15 @@
                     <input type="text" class="form-control" id="googleval" 
                     placeholder="Enter item to search for">
                     </div>
-                    <button type="button" onclick=googlesearch("{% url 'view_critical' text_name=text_id isbn_num='12345' %}") class="btn btn-default">Submit</button>
+                    <button type="button" onclick=googlesearch("{% url 'view_critical' text_name=text_id isbn_num='X1XXXXX' %}") class="btn btn-default">Submit</button>
                 </form>
 
       </div>
       <div id="searchresults" class="searchdisplay">
-            <li id="resultslist"></li>
+            <ul id="resultslist" class="bookview"></ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
       </div>
     </div>
   </div>
@@ -303,6 +302,7 @@ $(".lat_word").popover('disable');
             $('#searchbook').modal({backdrop: 'static', keyboard:false});
         }
 
+
         function googlesearch(url) {
             var search_text = document.getElementById("googleval").value
 
@@ -321,45 +321,63 @@ $(".lat_word").popover('disable');
 
             var results = document.getElementById("resultslist");
 
-            for (var i = 0; i < 30; i++) {
-                /*newval = "<li>".concat(jsonobj.items[i].volumeInfo.title);
-                newval = newval.concat("</li>")
-                document.getElementById("searchresults").innerHTML = 
-                document.getElementById("searchresults").innerHTML.concat(newval); */
+            var length = jsonobj.items.length;
 
-            var newitem = document.createElement("li");
-
-            var newspan = document.createElement("a");
-
-            var itemtext = document.createTextNode(jsonobj.items[i].volumeInfo.title);
-
-            //newspan.setAttribute("onclick","alert('hi')");
-            var isbn = 'ISBN:' + jsonobj.items[i].volumeInfo.industryIdentifiers[0].identifier;
-
-            var part1 = 'http://0.0.0.0:5000/textview/view_critical/GallicWars/';
-            var part2 = 'ISBN:9781416996019';
-
-            var attrib = part1 + isbn;
-            //var url = urls.view_critical("GallicWars", isbn);
-//ISBN:1909254150'
-
-            newspan.setAttribute("href", url.replace('12345', isbn));  
-
-            newspan.appendChild(itemtext);
-
-            newitem.appendChild(newspan);
-
-            results.appendChild(newitem);
+            for (var i = 0; i < length; i++) {
+            if (jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_10" || jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_13") {
+                books_list(jsonobj.items[i], results, url);
+            }
 
             }
+
+
+        function change_page(url) {
+         window.location.href = url;
+        }
+
+        function books_list(item, results, url) {
+            var newitem = document.createElement("li");
+            var title = document.createElement("span");
+            var contain = document.createElement("div")
+            var thumbnail = document.createElement("img")
+            //contain.setAttribute("class", "booklist")
+
+            var listing = item.volumeInfo.title + '<br>';
+
+            var length = item.volumeInfo.authors.length;
+
+            for (var i = 0; i < length; i++) {
+                listing = listing + item.volumeInfo.authors[i] + '<br>';
+            }
+
+            listing = listing + item.volumeInfo.publishedDate + '<br>';
+
+            var date = document.createTextNode(item.volumeInfo.publishedDate);
+            var author = document.createTextNode(item.volumeInfo.authors[0]);
+            var isbn = 'ISBN:' + item.volumeInfo.industryIdentifiers[0].identifier;
+
+            thumbnail.setAttribute("src",item.volumeInfo.imageLinks.smallThumbnail);
+            //thumbnail.setAttribute("style","float: right;");
+            contain.setAttribute("class", "clickdiv");
+            contain.setAttribute("onclick", "window.location='" + url.replace('X1XXXXX', isbn) + "'");
+
+            title.innerHTML = listing;
+
+            //title.appendChild(itemtext); 
+            contain.appendChild(title);
+            //contain.appendChild(author);
+            //contain.appendChild(date);
+            contain.appendChild(thumbnail);
+            newitem.appendChild(contain);
+            results.appendChild(newitem);
+        }
+
 
 
 
             //document.getElementById("searchresults").innerHTML = stringy;
 
             //resultslist
-
-            alert('hi');
 
         }
 

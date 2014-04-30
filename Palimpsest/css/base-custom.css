@@ -58,12 +58,19 @@ align-items: flex-start;
 color: #006633;
 }
 
-
 .popover {
     max-width: 350px;
     width: auto;
 }
 
+.bookview li div {
+  
+}
+
+.bookview li div:hover {
+  background-color: #E8E8E8;
+  cursor:pointer;
+}
 
 body {
   min-height: 2000px;
