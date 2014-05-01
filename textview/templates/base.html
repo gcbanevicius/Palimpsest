@@ -66,8 +66,13 @@
                 <!--li><a id="vocab" onclick="changeMode('vocab')" href="{% url 'vocab' text_name=text_id %}">Vocab</a-->
                 <li><a id="vocab" class="handhover" onclick="vocabToggle()">Vocab</a>
                 </li>
+                {% if user.is_authenticated %}
                 <li><a id="addcomment" class="handhover" onclick="changeMode('addcomment')">Add Comment</a>
                 </li>
+                {% else %}
+                <li><a id="addcomment" class="handhover" href="{% url 'subscribers.views.signin' %}">Add Comment</a>
+                </li>
+                {% endif %}
 
             </ul>
         </div>
@@ -87,6 +92,16 @@
             <div class="form-group">
                 <label for="name"><span id="commenthead"></span></label>
                 <textarea class="form-control" rows="3" id="commentmodaltext"></textarea>
+            </div>
+            <div class="radio">
+                <label>
+                <input type="radio" name="optionsRadios" id="public" value="option1" checked> Public Comment
+                 </label>
+            </div>
+            <div class="radio">
+                <label>
+                <input type="radio" name="optionsRadios" id="private" value="option2"> Private Comment
+                </label>
             </div>
         </form>
       </div>
@@ -229,8 +244,13 @@
         document.getElementById("commentmodaltext").value = '';
 	
         var text_name = "{{text_id}}"
+        var user_name = "{{user.username}}"
         
         alert('Comment is:\n' + newComment + '\n\nOn text: ' + text_name +  '; ' + linenum_global);
+        alert(user_name) //USERNAME
+        if ($('#public').is(':checked')) { //CHECK if it is public (or if ($('#private').is(':checked')) )
+            alert("public");
+        }
 
 			    var csrftoken = getCookie('csrftoken');
 			    
@@ -272,26 +292,47 @@
 
 $(function ()  
 { 
-    $(".lat_word").popover({html:true, content:vocabLookup});  
-$(".lat_word").popover('disable'); 
+    $(".lat_word").popover({html:true, content:vocabLookup});
+    $(".lat_word").popover('disable'); 
 });
+
+
+      $(document).click(function(e) {
+         if(e.target.id=="popovercloseid" )
+         {
+              $('.lat_word').popover('toggle');                
+         }
+
+      });
+
+      function closefunction(id) {
+        //id = $(this).attr('id');
+        var string = '#' + id;
+        string = string.replace(';', '\\;');
+        string = string.replace(',', '\\;');
+        string = string.replace('.', '\\;');
+        string = string.replace('?', '\\;');
+        $(string).popover('hide');
+        //$('.lat_word').popover('toggle');
+
+      }
 
         function vocabLookup(word) {
 
             if (vocab_on == 1) {
                 var william = '<iframe src="http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword='
-               /* var perseus = "http://www.perseus.tufts.edu/hopper/morph?l="
-                var my_url = perseus.concat(String($(this).attr('id')));
-                my_url = my_url.concat("&la=la")
-                '
+                id = $(this).attr('id');
 
-            $('#testing1').load('http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword=eum');*/
-            //william = william.concat(word)
             var halfway = william.concat(String($(this).attr('id')));
 
             var retVal = halfway.concat('"></iframe>');
 
-                return retVal;
+             close_func = "closefunction('" + id + "')";
+
+            var close_but = "<button onclick=" + close_func + ' type="button"  class="close">&times;</button> ';
+
+
+                return close_but + retVal;
 
         }
 
@@ -311,9 +352,8 @@ $(".lat_word").popover('disable');
             xmlHttp = new XMLHttpRequest();
             xmlHttp.open( "GET", 'https://www.googleapis.com/books/v1/volumes?q=' + search_text, false );
             xmlHttp.send( null );
-            //var tokener = new JSONTokener(xmlHttp.responseText);
+
             var response = xmlHttp.responseText;
-            //alert(response)
 
             var jsonobj = $.parseJSON(response);
 
@@ -357,16 +397,12 @@ $(".lat_word").popover('disable');
             var isbn = 'ISBN:' + item.volumeInfo.industryIdentifiers[0].identifier;
 
             thumbnail.setAttribute("src",item.volumeInfo.imageLinks.smallThumbnail);
-            //thumbnail.setAttribute("style","float: right;");
             contain.setAttribute("class", "clickdiv");
             contain.setAttribute("onclick", "window.location='" + url.replace('X1XXXXX', isbn) + "'");
 
             title.innerHTML = listing;
 
-            //title.appendChild(itemtext); 
             contain.appendChild(title);
-            //contain.appendChild(author);
-            //contain.appendChild(date);
             contain.appendChild(thumbnail);
             newitem.appendChild(contain);
             results.appendChild(newitem);
