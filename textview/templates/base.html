@@ -67,7 +67,7 @@
                 <!--li><a id="vocab" onclick="changeMode('vocab')" href="{% url 'vocab' text_name=text_id %}">Vocab</a-->
                 <li><a id="vocab" onclick="vocabToggle()">Vocab</a>
                 </li>
-                <li><a id="addcomment" onclick="changeMode('addcomment')">Add Comment</a>
+                <li><a id="addcomment" onclick="changeMode('addcomment')" }">Add Comment</a>
                 </li>
 
             </ul>
@@ -154,6 +154,14 @@
         }
 
         function changeMode(id) {
+            
+             
+            if (id == 'addcomment') {
+                //window.location.replace("/subscribers/signin")
+                alert(Session[]);
+
+
+            }
 
             document.getElementById("commentary").style.color = '#006633';
             document.getElementById("addcomment").style.color = '#006633';
@@ -239,9 +247,9 @@
 			    });
 
 			    $.ajax({
-			    type: 'POST',
-			    url: './add_comment',
-			    data: {'text_name': text_name, 'comment_text': newComment, 'line': linenum_global },
+			        type: 'POST',
+			        url: './add_comment',
+			        data: {'text_name': text_name, 'comment_text': newComment, 'line': linenum_global },
 		    });
 
 	}

@@ -87,13 +87,30 @@ def two_text(request, text_name=""):
 
     return HttpResponse(temp.render(c))
 
+# called from chagneMethod in base.html
+# checks to see if user is authenticated,
+# if not, redirect to signin page 
+def auth_user(request):
+
+    return 1
+
 def add_comment(request, text_name=""):
     if request.user.is_authenticated():
-        temp = loader.get_template('single_text.html')
+        temp = loader.get_template('add_comment.html')
 
         if request.is_ajax():
-            comment = Comment(path=request.POST['line'], user_id='1', text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+            print "AJAX request..."
+            path = request.POST['line']
+            print path
+            path = path.split('.')
+            print path
+            comment = Comment(book=int(path[0]), line=int(path[1]), user_id='1', public='TRUE', text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+            comment.save()
             query.insertComment(request.POST['line'], request.POST['comment_text'])
+
+        # this else is a dummy clause, remove later
+        else:
+            print "Not AJAX, I suppose..."
 
         c = RequestContext(request, {
           'text_id': text_name,
@@ -101,7 +118,9 @@ def add_comment(request, text_name=""):
           'text_right': '',#Text.objects.all()
           })
 
+        print "This far!"
         return HttpResponse(temp.render(c))
+
     else:
         return HttpResponseRedirect('/subscribers/signin')    
 
@@ -238,7 +257,7 @@ def view_critical(request, text_name=""):
         text_left = query.startQuery(q_range)
     ###  END get Latin text  ###
 
-        print text_left
+        #print text_left
 
         q_range.replace('-', ' ')
         q_list = q_range.split()

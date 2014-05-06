@@ -46,8 +46,8 @@ def db_connect():
         print 'Unexpected error:', sys.exc_info()
     
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
@@ -59,16 +59,24 @@ def db_connect():
 
 def book(bk_start):
     curs = db_connect()
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    #query = (str(bk_start), )
+    query = (int(bk_start), )
+    #print type(int(bk_start))
+    #curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    curs.execute("""SELECT * FROM textview_comment where book = %s ORDER BY line;""", query)
     lines = curs.fetchall()
     #print lines
     return lines
 
 def line(ln_start):
     curs = db_connect()
-    query = (str(ln_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    #query = (str(ln_start), )
+    bk_start = int(ln_start.split('.')[0])
+    ln_start = int(ln_start.split('.')[1])
+    #query = (int(ln_start)) 
+    query = (bk_start, ln_start)
+    #curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line = %s;""", query)
     line = curs.fetchall()
     #print line
     return line
@@ -92,12 +100,14 @@ def lineToLine(start, end):
     lines = []
 
     # get the first book
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    query = (int(bk_start), int(ln_start))
+    #curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
     #print curs.fetchall()
+    curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line >= ln_start ORDER BY line;""", query)
+
     lines.extend(curs.fetchall())
     #print lines, '!?!'
-    lines = [ line for line in lines if getDecimal(line[0]) >= ln_start ]
+    #lines = [ line for line in lines if getDecimal(line[0]) >= ln_start ]
 
     # if the lines only span one book
     if bk_start == bk_end:
@@ -144,25 +154,26 @@ def bookToBook(start, end):
     lines = []
 
     # get the first book
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    query = (int(bk_start), int(bk_end))
+    #curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    curs.execute("""SELECT * FROM textview_comment WHERE book >= %s AND book <= %s ORDER BY book, line;""", query)
     lines.extend(curs.fetchall())
     
     # if the lines only span one book
-    if bk_start == bk_end:
-        return lines 
+    #if bk_start == bk_end:
+    #    return lines 
 
     # if there's at least one full book between them
-    elif bk_end - bk_start > 1:
-        for i in range(bk_start+1, bk_end):
-            query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-            lines.extend(curs.fetchall())
+    #elif bk_end - bk_start > 1:
+    #    for i in range(bk_start+1, bk_end):
+    #        query = (str(i), )
+    #        curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    #        lines.extend(curs.fetchall())
             
     # now get the last book
-    query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-    lines.extend(curs.fetchall())
+    #query = (str(bk_end), )
+    #curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    #lines.extend(curs.fetchall())
     
     #print lines
     return lines
