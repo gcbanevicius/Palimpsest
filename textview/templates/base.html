@@ -166,6 +166,7 @@
         var linenum_global;
         var curr_mode = "None";
         var vocab_on = 0;
+        var vocab_open = 0;
 
         function queryBox(e) {
             if (e.keyCode == 13) {
@@ -274,12 +275,14 @@
         function vocabToggle() {
             if (vocab_on == 0) {
                 vocab_on = 1;
+                vocab_open = 0;
                 document.getElementById("vocab").style.color = '#700000';
                 $('.lat_word').addClass('special');
                 $(".lat_word").popover('enable');
             }
             else {
                 vocab_on = 0;
+                vocab_open = 0;
                 document.getElementById("vocab").style.color = '#006633';
                 $('.lat_word').removeClass('special');
                 $(".lat_word").popover('hide');
@@ -293,27 +296,18 @@
 $(function ()  
 { 
     $(".lat_word").popover({html:true, content:vocabLookup});
+
     $(".lat_word").popover('disable'); 
 });
 
 
-      $(document).click(function(e) {
-         if(e.target.id=="popovercloseid" )
-         {
-              $('.lat_word').popover('toggle');                
-         }
-
-      });
-
       function closefunction(id) {
         //id = $(this).attr('id');
         var string = '#' + id;
-        string = string.replace(';', '\\;');
-        string = string.replace(',', '\\;');
-        string = string.replace('.', '\\;');
-        string = string.replace('?', '\\;');
         $(string).popover('hide');
+        $(string).attr(id, "");
         //$('.lat_word').popover('toggle');
+
 
       }
 
@@ -321,9 +315,12 @@ $(function ()
 
             if (vocab_on == 1) {
                 var william = '<iframe src="http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword='
-                id = $(this).attr('id');
+                word = $(this).data('word');
+                var id = "open" + String(vocab_open);
+                vocab_open = vocab_open + 1;
+                $(this).attr("id", id);
 
-            var halfway = william.concat(String($(this).attr('id')));
+            var halfway = william.concat(word);
 
             var retVal = halfway.concat('"></iframe>');
 
