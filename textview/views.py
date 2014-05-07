@@ -21,6 +21,7 @@ def index(request, text_name=""):
     if request.method == 'GET':
         # just get Book 1
         if 'query_range' in request.session:
+            request.session['error_mode'] = 0
             q_range = request.session['query_range']
             text = query.startQuery(q_range)
         else:
