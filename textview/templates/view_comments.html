@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid">
 
 	<div class="row">
 		
-        <div class="col-md-5">
+        <div class="col-md-6">
          {#  {% for i in text_left %} #}
 		  {#{i.text_field}#}
          {#  <span id={{ i.0 }} class = 'linenumber' onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp {{ i.2 }} <br> #}
@@ -15,17 +15,21 @@
 		   {% for i in text_left%}
 			<span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
 			{% for word in i.1 %}
-			<span id='{{word}}' class="lat_word"> {{word}} </span>
+			<span class="lat_word" data-word="{{word}}"> {{word}} </span>
 			{% endfor %}
  			<br>
 			{% endfor %}
 	    </div>
 
-		<div class="col-md-5">
+		<div class="col-md-6">
 	       {#{ gal_war_eng.text_field }#} 
 	       {%for i in text_right %}
 		   {#{i.text_field}#}
-           {{ i.1 }}.{{ i.2 }} &nbsp &nbsp &nbsp {{ i.6 }}<br>
+           {{ i.1 }}.{{ i.2 }} &nbsp &nbsp &nbsp {{ i.6 }}
+           {% if i.3 == False %}
+               <em>***</em>
+           {% endif %}
+           <br>
 		   {% endfor %}
          </div>
 

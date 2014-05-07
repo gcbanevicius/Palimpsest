@@ -7,13 +7,16 @@
 
 #sidebar-wrapper {
   background: #E8E8E8;
-  height: 420px;
+  height: 100%; //420px;
+  margin-top: -20px;
   width: 190px;
 }
 
+
 .sidebar-nav {
-  width: 190px;
+  width: 100%;
 }
+
 
 .sidebar-nav > .sidebar-brand {
   color: #006633;
@@ -43,10 +46,33 @@ width: 170px;
   cursor:pointer;
 }
 
+.handhover:hover {
+  cursor:pointer;
+}
+
+.commentary{
+  position: fixed;
+}
+
 input[type="button"], input[type="submit"], input[type="reset"], input[type="file"]::-webkit-file-upload-button, button {
 align-items: flex-start;
 color: #006633;
 }
+
+.popover {
+    max-width: 350px;
+    width: auto;
+}
+
+.bookview li div {
+  
+}
+
+.bookview li div:hover {
+  background-color: #E8E8E8;
+  cursor:pointer;
+}
+
 
 
 body {

@@ -8,38 +8,61 @@ from django.core.context_processors import csrf
 
 from textview.models import QueryForm, Comment
 
-import fake, query, queryEng, queryComm
+import query
+import queryEng
+import queryComm
 
 # Create your views here.
 
 #@ensure_csrf_cookie
 def index(request, text_name=""):
     temp = loader.get_template('single_text.html')
-    if request.method == 'GET':
 
+    if request.method == 'GET':
         # just get Book 1
         if 'query_range' in request.session:
             q_range = request.session['query_range']
             text = query.startQuery(q_range)
         else:
-            text = query.startQuery('1')
-            request.session['query_range'] = '1'
-          
+            request.session['error_mode'] = 1
+            text = [
+                ('', '', 'Enter a query range at left in one of the following forms:', '', ''),
+                ('', '', 'Line to line (e.g. 1.10-2.10)', '', ''),
+                ('', '', 'Book to book (e.g. 1-2)', '', ''),
+                ('', '', 'A single line (e.g. 1.10)', '', ''),
+                ('', '', 'A single book (e.g. 1)', '', ''),        
+            ]
+
     elif request.method == 'POST':
         form = QueryForm(request.POST)
-        if form.is_valid():
+        if form.is_valid():            
+            request.session['error_mode'] = 0 # make sure to reset error_mode
             q_range = str(form.cleaned_data['range'])
             text = query.startQuery(q_range)
             request.session['query_range'] = q_range
+        else:
+            request.session['error_mode'] = 1
+            text = [
+                ('', '', 'Enter a query range at left in one of the following forms:', '', ''),
+                ('', '', 'Line to line (e.g. 1.10-2.10)', '', ''),
+                ('', '', 'Book to book (e.g. 1-2)', '', ''),
+                ('', '', 'A single line (e.g. 1.10)', '', ''),
+                ('', '', 'A single book (e.g. 1)', '', ''),        
+            ]
 
     newtext = []
-    for i in text:
-        newtext.append((i[0], i[2].split()))
+    # if error mode, no need to split string for vocab parsing
+    if request.session['error_mode'] == 1:
+        for i in text:
+            newtext.append((i[0], i[2]))
+    else:
+        for i in text:
+            newtext.append((i[0], i[2].split()))
 
     c = RequestContext (request, {
-      #'name': 'Caesar',
       'text_id': text_name,
-      'text_lines': newtext
+      'text_lines': newtext,
+      'error_mode': request.session['error_mode'] # pass in "error_mode", so we can choose correct layout
      })
 
     return HttpResponse(temp.render(c))
@@ -104,9 +127,16 @@ def add_comment(request, text_name=""):
             print path
             path = path.split('.')
             print path
-            comment = Comment(book=int(path[0]), line=int(path[1]), user_id='1', public='TRUE', text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+            
+            # NB POST['is_pub'] must be '1' for TRUE, '0' f`r FALSE
+            if request.POST['is_pub'] == '1':
+                #print "id = 0, public = t"
+                comment = Comment(book=int(path[0]), line=int(path[1]), user_id='0', public=1, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+            else:
+                comment = Comment(book=int(path[0]), line=int(path[1]), user_id=request.user.id, public=0, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+
             comment.save()
-            query.insertComment(request.POST['line'], request.POST['comment_text'])
+            #query.insertComment(request.POST['line'], request.POST['comment_text'])
 
         # this else is a dummy clause, remove later
         else:
@@ -117,8 +147,11 @@ def add_comment(request, text_name=""):
           'text_left': '',#Text.objects.all(), 
           'text_right': '',#Text.objects.all()
           })
+        
+        #print "print the user id!"
+        #print request.user.id
+        #print request.POST['is_pub']
 
-        print "This far!"
         return HttpResponse(temp.render(c))
 
     else:
@@ -128,9 +161,13 @@ def view_comments(request, text_name=""):
     if request.user.is_authenticated():    
         temp = loader.get_template('view_comments.html')
 
-#<<<<<<< HEAD
         ###  BEGIN get Latin text  ###
         if request.method == 'POST':
+            # set 'comment_type', since we know it's a POST
+            if 'comment_type' in request.POST:
+                print request.POST['comment_type'], 'hiya'
+                request.session['comment_view_mode'] = request.POST['comment_type']
+
             form = QueryForm(request.POST)
             if form.is_valid():
                 q_range = str(form.cleaned_data['range'])
@@ -153,68 +190,30 @@ def view_comments(request, text_name=""):
         #print text_left
     ###  END get Latin text  ###
 
-    #print text_left, "-.-.-"
+        # set view mode based on pre-stored var; else PUBLIC (1)
+        if 'comment_view_mode' in request.session:
+            view_mode = request.session['comment_view_mode']
+        else:
+            view_mode = 1
 
         q_range.replace('-', ' ')
         q_list = q_range.split()
 
-        text_right = queryComm.startQuery(q_range)
-
-        #for t in text_left:
-        #    text_left[2] = str(text_left[2]).split()
-    
-        #c = RequestContext(request, {
-        #    'text_id': text_name,
-        #    'text_left': text_left,
-        #    'text_right': text_right,
-        #})
-#=======
-#        ###  BEGIN get Latin text  ###
-#        if 'query_range' in request.session:
-#            q_range = request.session['query_range']
-#            text = query.startQuery(q_range)
-#        else:
-#            text = query.startQuery('1')
-#            q_range = '1'
-#            request.session['query_range'] = q_range
-#        ###  END get Latin text  ###
-#
-#        q_range.replace('-', ' ')
-#        q_list = q_range.split()
-#
-#        if len(q_list) > -1:
-#            text_right = queryComm.startQuery(q_range)
-#        
-#        elif len(q_list) == 1:
-#            if '.' in q_list[0]:
-#            # it's a single line
-#                text_right =  Comment.objects.filter(path=q_list[0])[0].comment_text
-#            else:
-#            # it's a whole book
-#                start_range = q_list[0]
-#                end_range = int(q_list[0].split('.')[0]) + 1
-#                text_lines = Comment.objects.filter(path__gte=start_range).filter(path__lt=end_range)
-#                
-#                text_right = []
-#                for text_line in text_lines:
-#                    text_right.append( (str(text_line.path), text_line.comment_text) )
-#>>>>>>> a5272bd2c054a67bde693a120bbb69216cb40f93
-
-        #else:
-        #    text_right = ''
+        text_right = queryComm.startQuery(q_range, int(view_mode)) # I am SICK of everything being a string...
 
         newleft = []
         for i in text_left:
-            newleft.append((i[0], i[2].split()))
+            newleft.append((i[0], i[2].split(), i[3]))
 
         c = RequestContext (request, {
-        #'name': 'Caesar',
             'text_id': text_name,
             'text_left': newleft, 
             'text_right': text_right,
         })
 
+        print "about to return from view_comments..."
         return HttpResponse(temp.render(c))
+        
     else:
         return HttpResponseRedirect('/subscribers/signin')
 
@@ -228,7 +227,7 @@ def vocab(request, text_name=""):
     return HttpResponse(temp.render(c))
     
     
-def view_critical(request, text_name=""):
+def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
     if request.user.is_authenticated():    
         temp = loader.get_template('view_critical.html')
 
@@ -257,22 +256,14 @@ def view_critical(request, text_name=""):
         text_left = query.startQuery(q_range)
     ###  END get Latin text  ###
 
-        #print text_left
-
-        q_range.replace('-', ' ')
-        q_list = q_range.split()
-
-        text_right = queryComm.startQuery(q_range)
-
         newleft = []
         for i in text_left:
             newleft.append((i[0], i[2].split()))
 
         c = RequestContext (request, {
-        #'name': 'Caesar',
             'text_id': text_name,
-            'text_left': newleft, 
-            #'text_right': text_right,
+            'text_left': newleft,
+            'isbn': isbn_num, 
         })
 
         return HttpResponse(temp.render(c))

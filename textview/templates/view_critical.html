@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class=container">
+<div class="container-fluid">
     <div class="row">
 
 
-        <div class="col-md-5">
+        <div class="col-md-6">
 {% for i in text_left %}
 <span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
 	{% for word in i.1 %}
-		<span id='{{word}}' class="lat_word"> {{word}} </span>
+		<span class="lat_word" data-word="{{word}}"> {{word}} </span>
 	{% endfor %}
  	<br>
 {% endfor %}
         </div><!--/col-md-5-->
 
-        <div class="col-md-7">
-            <div id="viewerCanvas" style="width: 500px; height: 600px; position: fixed"></div>
+        <div class="col-md-6">
+            <div id="viewerCanvas" class="commentary" style="width: 40%; height:80%"></div>
         </div><!--/col-md-7-->
 
 
     </div><!--/row-->
-</div><!--/containter-->
+</div ><!--/containter-->
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -29,7 +29,7 @@
 
         function initialize() {
             var viewer = new google.books.DefaultViewer(document.getElementById('viewerCanvas'));
-            viewer.load('ISBN:1909254150');
+            viewer.load('{{isbn}}');
         }
 
         google.setOnLoadCallback(initialize);
