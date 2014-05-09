@@ -31,7 +31,7 @@ padding-top: 70px;
 height: 100%;
 width: 100%;
 background-clip: content-box;
-background: no-repeat center center fixed;
+background: url(static/zeus_fade.png) no-repeat center center fixed;
 background-size: cover;
 background-attachment: fixed;
 background-position: center center;
