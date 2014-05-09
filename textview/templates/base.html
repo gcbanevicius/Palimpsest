@@ -43,7 +43,7 @@
                             <!-- in a perfect world, I'd do this in AJAX, but the form action is what workd -->
                             <form action="" method="POST">{% csrf_token %}
                             {{ form.as_p }}
-                                <input type="text" class="form-control" name="range" placeholder="e.g. 1.10-1.15"/> <!-- onkeypress="queryBox(event)" /> --><br/>
+                                <input type="text" class="form-control" name="range" placeholder="e.g. 1.10-1.15"/> <br/>
                                 <input type="submit" value="Submit" />
                             </form>
                         </div>
@@ -109,7 +109,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
       </div>
     </div>
   </div>
@@ -117,7 +117,8 @@
 
 
    <!-- Modal to search for Googlebook (only appears on click)-->
-<div class="modal fade" id="searchbook" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="searchbook" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
+ aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -127,20 +128,20 @@
       <div class="modal-body">
             <label for="name"><span id="bookhead"></span></label>
 
-                <form>
+                <form id="booksubmit">
                     <div class="form-group">
                     <label for="name">Book Search</label>
                     <input type="text" class="form-control" id="googleval" 
                     placeholder="Enter item to search for">
                     </div>
-                    <button type="button" onclick=googlesearch("{% url 'view_critical' text_name=text_id isbn_num='X1XXXXX' %}") class="btn btn-default">Submit</button>
+                    <button id="searchme" type="button" onclick=googlesearch("{% url 'view_critical' text_name=text_id isbn_num='X1XXXXX' %}") class="btn btn-default">Submit</button>
                 </form>
       </div>
       <div id="searchresults" class="searchdisplay">
             <ul id="resultslist" class="bookview"></ul>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button  class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -189,6 +190,9 @@
 
 <!-- end modals -->
      
+     <br>
+     <br>
+     <br>
   <div class="col-md-10">
   {% block content%}
   {% endblock %}
@@ -222,8 +226,6 @@
         function changeMode(id) {
             
             if (id == 'addcomment') {
-                //window.location.replace("/subscribers/signin")
-                //alert(Session[]);
 
             }
 
@@ -312,11 +314,9 @@
         // NB: must be 1 for TRUE, 0 for FALSE
         if ($('#public').is(':checked')) {
             var is_pub = 1;
-            alert("public");
         }
         else {
             var is_pub = 0;
-            alert("private");
         }
 
 
@@ -391,11 +391,23 @@ $(function ()
         }
 
         function viewcommentary() {
-            $('#searchbook').modal({backdrop: 'static', keyboard:false});
+            $('#searchbook').modal({backdrop: "static", keyboard:false});
         }
 
+$('#booksubmit').keypress( function( e ) {
+    
+  var code = e.keyCode || e.which;
 
-        function googlesearch(url) {
+  if (e.keyCode == 13) {
+    e.preventDefault();
+    $('#searchme').click();
+    //return false; 
+  }
+})
+
+
+
+            function googlesearch(url) {
             var search_text = document.getElementById("googleval").value
 
             var xmlHttp = null;
@@ -412,11 +424,23 @@ $(function ()
 
             var results = document.getElementById("resultslist");
 
+            while(results.childNodes.length > 0) {
+            old_node = results.childNodes[0];
+            results.removeChild(old_node);
+        }
+
+        if (jsonobj.totalItems == 0) {
+            no_results(results);
+            return;
+        }
+
             var length = jsonobj.items.length;
 
             for (var i = 0; i < length; i++) {
             if (jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_10" || jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_13") {
-                books_list(jsonobj.items[i], results, url);
+                if (jsonobj.items[i].accessInfo.viewability != "NO_PAGES") {
+                    books_list(jsonobj.items[i], results, url);
+                }
             }
 
             }
@@ -424,6 +448,16 @@ $(function ()
 
         function change_page(url) {
             window.location.href = url;
+        }
+
+        function no_results(results) {
+            var newitem = document.createElement("li");
+            var no_result = document.createTextNode("No results");
+
+            newitem.appendChild(no_result);
+
+            results.appendChild(newitem);
+
         }
 
         function books_list(item, results, url) {
@@ -458,8 +492,6 @@ $(function ()
             newitem.appendChild(contain);
             results.appendChild(newitem);
         }
-
-
 
 
             //document.getElementById("searchresults").innerHTML = stringy;
