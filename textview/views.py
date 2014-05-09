@@ -14,6 +14,24 @@ import queryComm
 
 # Create your views here.
 
+def render_error(request, error_msg, text_name = ''):
+    temp = loader.get_template('error.html')
+   
+    text = [error_msg] + [
+        ('', '', 'Enter a query range at left in one of the following forms:', '', ''),
+        ('', '', 'Line to line (e.g. 1.10-2.10)', '', ''),
+        ('', '', 'Book to book (e.g. 1-2)', '', ''),
+        ('', '', 'A single line (e.g. 1.10)', '', ''),
+        ('', '', 'A single book (e.g. 1)', '', ''),        
+    ]
+
+    c = RequestContext (request, {
+        'text_id': text_name,
+        'text_lines': text,
+    })
+
+    return HttpResponse(temp.render(c))
+
 #@ensure_csrf_cookie
 def index(request, text_name=""):
     temp = loader.get_template('single_text.html')
@@ -24,15 +42,15 @@ def index(request, text_name=""):
             request.session['error_mode'] = 0
             q_range = request.session['query_range']
             text = query.startQuery(q_range)
+            error = text[1] # error from query.py
+            text = text[0] # actual list of text-tuples
+            
+            if error != 0:
+                return render_error(request, text[0], text_name)
+
         else:
             request.session['error_mode'] = 1
-            text = [
-                ('', '', 'Enter a query range at left in one of the following forms:', '', ''),
-                ('', '', 'Line to line (e.g. 1.10-2.10)', '', ''),
-                ('', '', 'Book to book (e.g. 1-2)', '', ''),
-                ('', '', 'A single line (e.g. 1.10)', '', ''),
-                ('', '', 'A single book (e.g. 1)', '', ''),        
-            ]
+            return render_error(request, ('', '', 'Welcome to Palimpsest!', '', ''), text_name)
 
     elif request.method == 'POST':
         form = QueryForm(request.POST)
@@ -40,16 +58,18 @@ def index(request, text_name=""):
             request.session['error_mode'] = 0 # make sure to reset error_mode
             q_range = str(form.cleaned_data['range'])
             text = query.startQuery(q_range)
+            error = text[1] # error from query.py
+            text = text[0] # actual list of text-tuples
+            
+            if error != 0:
+                return render_error(request, text[0], text_name)
+            
             request.session['query_range'] = q_range
+            
+
         else:
             request.session['error_mode'] = 1
-            text = [
-                ('', '', 'Enter a query range at left in one of the following forms:', '', ''),
-                ('', '', 'Line to line (e.g. 1.10-2.10)', '', ''),
-                ('', '', 'Book to book (e.g. 1-2)', '', ''),
-                ('', '', 'A single line (e.g. 1.10)', '', ''),
-                ('', '', 'A single book (e.g. 1)', '', ''),        
-            ]
+            return render_error(request, ('', '', '', '', ''), text_name)
 
     newtext = []
     # if error mode, no need to split string for vocab parsing
@@ -57,6 +77,7 @@ def index(request, text_name=""):
         for i in text:
             newtext.append((i[0], i[2]))
     else:
+        print text
         for i in text:
             newtext.append((i[0], i[2].split()))
 
@@ -66,6 +87,7 @@ def index(request, text_name=""):
       'error_mode': request.session['error_mode'] # pass in "error_mode", so we can choose correct layout
      })
 
+    print text
     return HttpResponse(temp.render(c))
 
 
@@ -76,10 +98,18 @@ def two_text(request, text_name=""):
     prev_range = request.session['query_range']
     if request.method == 'GET':
         # just get Book 1
-        #text_left = query.startQuery('1')
         text_left = query.startQuery(prev_range)
-        
+        error = text_left[1] # error from query.py
+        text_left = text_left[0] # actual list of text-tuples
+ 
+        print text_left
+        # if error mode engaged, go no further
+        if error != 0: #request.session['error_mode'] == 1:
+            print "neg 1"
+            return render_error(request, text_left[0], text_name) 
+
         # now need second to last field, because of comment field
+        print text_left[0], text_left[-1]
         text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
 
     elif request.method == 'POST':
@@ -88,12 +118,23 @@ def two_text(request, text_name=""):
             q_range = str(form.cleaned_data['range'])
             request.session['query_range'] = q_range
             text_left = query.startQuery(q_range)
+            error = text_left[1] # error from query.py
+            text_left = text_left[0] # actual list of text-tuples
+           
+            # if error mode engaged, go no further
+            if error != 0: #request.session['error_mode'] == 1 :
+                return render_error(request, text_left[0], text_name) 
+
+            print text_left[0], text_left[-1]
             text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
         else:
             if 'query_range' in request.session:   
                 q_range = '1'
             request.session['query_range'] = q_range
             text_left = query.startQuery(q_range)
+            error = left_text[1] # error from query.py 
+            text_left = left_text[0] # actual list of text-tuples
+           
             text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
 
 
@@ -131,6 +172,7 @@ def add_comment(request, text_name=""):
             
             # NB POST['is_pub'] must be '1' for TRUE, '0' f`r FALSE
             if request.POST['is_pub'] == '1':
+                # if error mode engaged, go no further
                 #print "id = 0, public = t"
                 comment = Comment(book=int(path[0]), line=int(path[1]), user_id='0', public=1, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
             else:
@@ -188,6 +230,9 @@ def view_comments(request, text_name=""):
                 request.session['query_range'] = q_range
     
         text_left = query.startQuery(q_range)
+        error = text_left[1] # error from query.py
+        text_left = text_left[0] # actual list of text-tuples
+ 
         #print text_left
     ###  END get Latin text  ###
 
@@ -216,6 +261,8 @@ def view_comments(request, text_name=""):
         return HttpResponse(temp.render(c))
         
     else:
+        print request.get_full_path()
+        request.session['curr_page'] = request.get_full_path()
         return HttpResponseRedirect('/subscribers/signin')
 
 def vocab(request, text_name=""):
@@ -255,6 +302,9 @@ def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
                 request.session['query_range'] = q_range
     
         text_left = query.startQuery(q_range)
+        error = text_left[1] # error from query.py
+        text_left = text_left[0] # actual list of text-tuples
+ 
     ###  END get Latin text  ###
 
         newleft = []

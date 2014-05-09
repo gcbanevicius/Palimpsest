@@ -36,7 +36,14 @@ def validate(request):
             return render_to_response('subscribers/login_error.html', c)
     else:
         return render_to_response('subscribers/login_error.html', c)
-    return render(request, 'homepage.html')
+    #return render(request, 'homepage.html')
+    if 'curr_page' in request.session:
+        print request.session['curr_page'], "!?!"
+        #return render(request, request.session['curr_page'])
+        return HttpResponseRedirect(request.session['curr_page'])
+    else:
+        print 'No session var for last page...'
+        return render(request, 'homepage.html')
 
 def signout(request):
     c = {}
@@ -63,4 +70,10 @@ def signup_success(request):
             ln = request.POST['lastn']
         
             User.objects.create_user(un, em, pw, first_name=fn, last_name=ln)
-            return render(request, 'homepage.html')
+
+            if 'curr_page' in request.session:
+                print request.session['curr_page'], "!?!"
+                return render(request, request.session['curr_page'])
+            else:
+                print 'No session var for last page...'
+                return render(request, 'homepage.html')

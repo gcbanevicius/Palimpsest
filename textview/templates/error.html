@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-md-3"></div>
+
+<div class="col-md-9">
+    <p>{{ text_lines.0.2 }}</p>
+    <br>
+    <p>{{ text_lines.1.2 }}</p>
+    <ul style="list-style-type:none">
+    {% for line in text_lines|slice:"2:" %}
+        <li>{{ line.2 }}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+</div> <!-- /row -->
+
+{% endblock %}

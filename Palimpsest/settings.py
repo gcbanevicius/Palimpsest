@@ -56,7 +56,7 @@ INSTALLED_APPS = (
 #    'south',
     'textview',
     'subscribers',
-    'social.apps.django_app.default'
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (

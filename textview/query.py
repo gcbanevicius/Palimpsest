@@ -59,10 +59,10 @@ def book(bk_start):
         curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
     lines = curs.fetchall()
     #print lines
-    return lines
+    return (lines, 0)
 
 def line(ln_start):
     curs = db_connect()
@@ -71,10 +71,10 @@ def line(ln_start):
         curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
-        return rspStr
+        return ( [('', '', rspStr, '', '')], -1 )
     line = curs.fetchall()
     #print line
-    return line
+    return (line, 0)
 
 def lineToLine(start, end):
     curs = db_connect()
@@ -88,7 +88,7 @@ def lineToLine(start, end):
     if int(bk_start) > int(bk_end):
         print "Starting position is greater than ending position"
         rspStr = 'Invalid query: starting position greater than ending position.'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
 
     #print "Book range:", bk_start, bk_end
     #print "Linerange:", ln_start, ln_end
@@ -101,14 +101,14 @@ def lineToLine(start, end):
         curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
     lines.extend(curs.fetchall())
     
     # if the lines only span one book
     if bk_start == bk_end:
         lines = lines[ln_start-1 : ln_end]
         #print lines
-        return lines 
+        return (lines, 0)
 
     else:
         lines = lines[ln_start-1 : ]
@@ -121,7 +121,7 @@ def lineToLine(start, end):
                 curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
             except:
                 rspStr = 'Please input a valid query!'
-                return [('', '', rspStr, '', '')]
+                return ( [('', '', rspStr, '', '')], -1 )
  
             lines.extend(curs.fetchall())
             
@@ -131,11 +131,11 @@ def lineToLine(start, end):
         curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
     lines.extend(curs.fetchall()[:ln_end])
     
     #print lines
-    return lines
+    return (lines, 0)
 
 def bookToBook(start, end):
     curs = db_connect()
@@ -150,7 +150,7 @@ def bookToBook(start, end):
     if int(bk_start) > int(bk_end):
         print "Starting position is greater than ending position"
         rspStr = 'Invalid query: starting position greater than ending position.'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
 
     #print "Book range:", bk_start, bk_end
     #print "Linerange:", ln_start, ln_end
@@ -163,13 +163,13 @@ def bookToBook(start, end):
         curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
     lines.extend(curs.fetchall())
     
     # if the lines only span one book
     if bk_start == bk_end:
         #print lines
-        return lines 
+        return (lines, 0) 
 
     # if there's at least one full book between them
     elif bk_end - bk_start > 1:
@@ -179,7 +179,7 @@ def bookToBook(start, end):
                 curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
             except:
                 rspStr = 'Please input a valid query!'
-                return [('', '', rspStr, '', '')]
+                return ( [('', '', rspStr, '', '')], -1 )
             lines.extend(curs.fetchall())
             
     # now get the last book
@@ -188,12 +188,12 @@ def bookToBook(start, end):
         curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
             
     lines.extend(curs.fetchall())
     
     #print lines
-    return lines
+    return (lines, 0)
 
 def startQuery(queryStr):
     #print queryStr
@@ -203,16 +203,14 @@ def startQuery(queryStr):
         print "Please input a single query or query range"
 
 
-    #query = sys.argv[1]      
     query = queryStr.replace('-', ' ')
-    #print query
     q_list = query.split() # no options will do any whitespace
-    #print q_list
+    print q_list
     q_len = len(query.split())
 
     if q_len > 2:
         rspStr = 'Please limit query to single index or range of two.'
-        return [('', '', rspStr, '', '')]
+        return ( [('', '', rspStr, '', '')], -1 )
 
     elif q_len == 2:
         if re.match(r'^\s*\d+\s*\d+\s*$', query):
@@ -223,15 +221,15 @@ def startQuery(queryStr):
         
         elif re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query):
             rspStr = 'Invalid query: cannot give book as start and specific line as end.'
-            return [('', '', rspStr, '', '')]
+            return ( [('', '', rspStr, '', '')], -1 )
 
         elif re.match(r'^\s*\d+\.\d+\s*\d+\s*$', query):
             rspStr = 'Invalid query: cannot give specific line as start and book as end.'
-            return [('', '', rspStr, '', '')]
+            return ( [('', '', rspStr, '', '')], -1 )
 
         else:
             rspStr = 'Please input a valid query!'
-            return [('', '', rspStr, '', '')]
+            return ( [('', '', rspStr, '', '')], -1 )
 
     elif q_len == 1:
         if re.match(r'^\s*\d+\s*$', query):
@@ -244,14 +242,15 @@ def startQuery(queryStr):
             q_result = line(match.group())
         
         else:
+            print 'no match...'
             rspStr = 'Please input a valid query!'
-            return [('', '', rspStr, '', '')]
+            return ( [('', '', rspStr, '', '')], -1 )
 
     else:
         print "Should not be here." 
 
     return q_result
- 
+
 def insertComment(lineNum, commentText):
     urlparse.uses_netloc.append('postgres')
     urlparse.uses_netloc.append('mysql')
@@ -302,67 +301,11 @@ def insertComment(lineNum, commentText):
         conn.close()
 
 def main():
-    #print sys.argv
-    #print len(sys.argv)
     if len(sys.argv) < 2:
         print "Please input a single query or query range"
         
-
-    query = sys.argv[1]      
-    query = query.replace('-', ' ')
-    #print query
-    q_list = query.split() # no options will do any whitespace
-    #print q_list
-    q_len = len(query.split())
-
-    if q_len > 2:
-        print "Please limit query to single index or range of two"
-
-    elif q_len == 2:
-        match = re.match(r'^\s*\d+\s*\d+\s*$', query)
-        if match:
-            #print '1-1'
-            q_result = bookToBook(q_list[0], q_list[1])
-
-        match = re.match(r'^\s*\d+\.\d+\s*\d+\.\d+\s*$', query)
-        if match:
-            #print '2-2'
-            q_result = lineToLine(q_list[0], q_list[1])
-        
-        match = re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query)
-        if match:
-            #print '1-2'
-            q_result = bookToLine(q_list[0], q_list[1])
-
-        match = re.match(r'^\s*\d+\.\d+\s*\d+\s*$', query)
-        if match:
-            #print '2-1'
-            #print match.group()
-            #print q_list[0] + ' and ' + q_list[1]
-            q_result = lineToBook(q_list[0], q_list[1])
-
-
-    elif q_len == 1:
-        match = re.match(r'^\s*\d+\s*$', query)
-        if match:
-            #print '1'
-            #print match.group()
-            q_result = book(match.group())
-
-        match = re.match(r'^\s*\d+\.\d+\s*$', query)
-        if match:
-            #print '2'
-            #print match.group()
-            q_result = line(match.group())
-
     else:
-        print "Please input a query"
-
-    # all done!
-    #print q_result    
-    return q_result
-    
-
+        return startQuery(sys.argv[1])    
 
 if __name__ == "__main__":
     main()
