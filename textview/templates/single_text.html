@@ -6,7 +6,7 @@
 <div class="col-md-3"></div>
 
 <div class="col-md-9">
-{% if error_mode == 1 %}
+{#% if error_mode == 1 %}
     <p>{{ text_lines.0.1 }}</p>
     <br>
     <p>{{ text_lines.1.1 }}</p>
@@ -15,7 +15,7 @@
         <li>{{ line.1 }}</li>
     {% endfor %}
     </ul>
-{% else %}
+{% else %#}
     {% for i in text_lines%}
         <span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
 	    {% for word in i.1 %}
@@ -23,7 +23,7 @@
 	    {% endfor %}
  	    <br>
     {% endfor %}
-{% endif %}
+{#% endif %#}
 </div>
 
 </div> <!-- /row -->

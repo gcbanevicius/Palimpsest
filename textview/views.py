@@ -37,57 +37,45 @@ def index(request, text_name=""):
     temp = loader.get_template('single_text.html')
 
     if request.method == 'GET':
-        # just get Book 1
+        # if we already asked for a range
         if 'query_range' in request.session:
-            request.session['error_mode'] = 0
             q_range = request.session['query_range']
             text = query.startQuery(q_range)
             error = text[1] # error from query.py
             text = text[0] # actual list of text-tuples
-            
             if error != 0:
                 return render_error(request, text[0], text_name)
-
+        # else give a welcome message
         else:
-            request.session['error_mode'] = 1
             return render_error(request, ('', '', 'Welcome to Palimpsest!', '', ''), text_name)
 
     elif request.method == 'POST':
         form = QueryForm(request.POST)
         if form.is_valid():            
-            request.session['error_mode'] = 0 # make sure to reset error_mode
             q_range = str(form.cleaned_data['range'])
             text = query.startQuery(q_range)
             error = text[1] # error from query.py
             text = text[0] # actual list of text-tuples
-            
             if error != 0:
                 return render_error(request, text[0], text_name)
-            
+            # set the query_range session variable 
             request.session['query_range'] = q_range
-            
-
+        # if it was an invalid form, print suggestion message
         else:
-            request.session['error_mode'] = 1
             return render_error(request, ('', '', '', '', ''), text_name)
 
     newtext = []
-    # if error mode, no need to split string for vocab parsing
-    if request.session['error_mode'] == 1:
-        for i in text:
-            newtext.append((i[0], i[2]))
-    else:
-        print text
-        for i in text:
-            newtext.append((i[0], i[2].split()))
+    #print text
+    for i in text:
+        newtext.append((i[0], i[2].split()))
 
     c = RequestContext (request, {
       'text_id': text_name,
       'text_lines': newtext,
-      'error_mode': request.session['error_mode'] # pass in "error_mode", so we can choose correct layout
+      #'error_mode': request.session['error_mode'] # pass in "error_mode", so we can choose correct layout
      })
 
-    print text
+    #print text
     return HttpResponse(temp.render(c))
 
 
@@ -95,18 +83,18 @@ def index(request, text_name=""):
 def two_text(request, text_name=""):
     temp = loader.get_template('two_text.html')
 
-    prev_range = request.session['query_range']
     if request.method == 'GET':
-        # just get Book 1
-        text_left = query.startQuery(prev_range)
-        error = text_left[1] # error from query.py
-        text_left = text_left[0] # actual list of text-tuples
- 
-        print text_left
-        # if error mode engaged, go no further
-        if error != 0: #request.session['error_mode'] == 1:
-            print "neg 1"
-            return render_error(request, text_left[0], text_name) 
+        # if we already asked for a range
+        if 'query_range' in request.session:
+            q_range = request.session['query_range']
+            text_left = query.startQuery(q_range)
+            error = text_left[1] # error from query.py
+            text_left = text_left[0] # actual list of text-tuples
+            if error != 0:
+                return render_error(request, text_left[0], text_name)
+        # else give a welcome message
+        else:
+            return render_error(request, ('', '', 'Welcome to Palimpsest!', '', ''), text_name)
 
         # now need second to last field, because of comment field
         print text_left[0], text_left[-1]
@@ -122,29 +110,21 @@ def two_text(request, text_name=""):
             text_left = text_left[0] # actual list of text-tuples
            
             # if error mode engaged, go no further
-            if error != 0: #request.session['error_mode'] == 1 :
+            if error != 0: 
                 return render_error(request, text_left[0], text_name) 
 
             print text_left[0], text_left[-1]
             text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
-        else:
-            if 'query_range' in request.session:   
-                q_range = '1'
-            request.session['query_range'] = q_range
-            text_left = query.startQuery(q_range)
-            error = left_text[1] # error from query.py 
-            text_left = left_text[0] # actual list of text-tuples
-           
-            text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
 
+        # if it was an invalid form, print suggestion message
+        else:
+            return render_error(request, ('', '', '', '', ''), text_name)
 
     newleft = []
     for i in text_left:
         newleft.append((i[0], i[2].split()))
 
-
     c = RequestContext (request, {
-      #'name': 'Caesar',
       'text_id': text_name,
       'text_left': newleft, 
       'text_right': text_right,

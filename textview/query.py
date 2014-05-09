@@ -196,7 +196,7 @@ def bookToBook(start, end):
     return (lines, 0)
 
 def startQuery(queryStr):
-    #print queryStr
+    print '-', queryStr, '-'
 
     # should not occur
     if not queryStr:
@@ -248,6 +248,15 @@ def startQuery(queryStr):
 
     else:
         print "Should not be here." 
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+
+    if not q_result[0]:
+        print 'Null result!'
+        rspStr = """Query returned no text, despite valid syntax.\n
+                  Are you sure the lines you want... exist?"""
+        return ( [('', '', rspStr, '', '')], -1 )
+
 
     return q_result
 
