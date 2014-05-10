@@ -75,6 +75,7 @@ color: #006633;
 
 
 body {
+  min-height: 100px;
   padding-top: 70px;
   background-color: #fdf6e3; // light background, solarized theme
 }
