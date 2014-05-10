@@ -94,3 +94,15 @@ body {
   max-width: 75%;
   width: 75%;
 }
+
+#clickdivThumb {
+  float: left;
+}
+
+#clickdivText {
+  padding-left: 100px;    
+}
+
+.clickdiv {
+  list-style-type: none;
+}

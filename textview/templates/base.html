@@ -28,7 +28,7 @@
 {% include "navbar_base.html" %}
 
    <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-2">
 
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
@@ -54,12 +54,20 @@
                 </li>
                 <li><a href="{% url 'two_text' text_name=text_id %}">View Translation</a>
                 </li>
-                <!-- <li><a href="{% url 'view_comments' text_name=text_id %}">View User Comments</a>
-                </li> -->
+                {% if user.is_authenticated %}
                 <li><a class="handhover" id=viewComments onclick="viewUserComments()">View User Comments</a>
                 </li>
+                {% else %}
+                <li><a id="viewComments" class="handhover" href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">View User Comments</a>
+                </li>
+                {% endif %}
+                {% if user.is_authenticated %}
                 <li><a class="handhover" id=viewcritical onclick="viewcommentary()">View Commentary</a>
                 </li>
+                {% else %}
+                <li><a id="viewcritical" class="handhover" href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">View Commentary</a>
+                </li>
+                {% endif %}
 
                 <li> <h5> Tools </h5> </li>
 
@@ -70,7 +78,7 @@
                 <li><a id="addcomment" class="handhover" onclick="changeMode('addcomment')">Add Comment</a>
                 </li>
                 {% else %}
-                <li><a id="addcomment" class="handhover" href="{% url 'subscribers.views.signin' %}">Add Comment</a>
+                <li><a id="addcomment" class="handhover" href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">Add Comment</a>
                 </li>
                 {% endif %}
 
@@ -190,7 +198,7 @@
 
 <!-- end modals -->
      
-  <div class="col-md-9">
+  <div class="col-md-10">
   {% block content%}
   {% endblock %}
   </div><!-- /.col-md -->
@@ -455,8 +463,11 @@ $('#booksubmit').keypress( function( e ) {
         function books_list(item, results, url) {
             var newitem = document.createElement("li");
             var title = document.createElement("span");
-            var contain = document.createElement("div")
+            var containL = document.createElement("div")
+            var containR = document.createElement("div")
             var thumbnail = document.createElement("img")
+            thumbnail.style.float = "left";
+
             //contain.setAttribute("class", "booklist")
 
             var listing = item.volumeInfo.title + '<br>';
@@ -467,28 +478,29 @@ $('#booksubmit').keypress( function( e ) {
                 listing = listing + item.volumeInfo.authors[i] + '<br>';
             }
 
-            listing = listing + item.volumeInfo.publishedDate + '<br>';
+            listing = listing + item.volumeInfo.publishedDate + '<br>' + '<hr>';
 
             var date = document.createTextNode(item.volumeInfo.publishedDate);
             var author = document.createTextNode(item.volumeInfo.authors[0]);
             var isbn = 'ISBN:' + item.volumeInfo.industryIdentifiers[0].identifier;
 
             thumbnail.setAttribute("src",item.volumeInfo.imageLinks.smallThumbnail);
-            contain.setAttribute("class", "clickdiv");
-            contain.setAttribute("onclick", "window.location='" + url.replace('X1XXXXX', isbn) + "'");
+            newitem.setAttribute("class", "clickdiv");
+            newitem.setAttribute("onclick", "window.location='" + url.replace('X1XXXXX', isbn) + "'");
 
             title.innerHTML = listing;
 
-            contain.appendChild(title);
-            contain.appendChild(thumbnail);
-            newitem.appendChild(contain);
+            containL.setAttribute("id", "clickdivThumb");
+            containR.setAttribute("id", "clickdivText");
+
+            containL.appendChild(thumbnail);
+            containR.appendChild(title);
+            
+            newitem.appendChild(containL);
+            newitem.appendChild(containR);
+            
             results.appendChild(newitem);
         }
-
-
-            //document.getElementById("searchresults").innerHTML = stringy;
-
-            //resultslist
 
         }
 
