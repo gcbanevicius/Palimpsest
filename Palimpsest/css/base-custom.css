@@ -82,7 +82,7 @@ body {
 
 .container {
   width: 100%!important; //960px!important;
-  margin-left: 50px;
+  margin-left: auto;
 }
 
 .col-md-3 {
