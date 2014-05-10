@@ -26,6 +26,16 @@ p {
 img {width:80%;
 	height: auto; } 
 
+.contacts {
+	width: 350px;
+	text-align: center;
+	color: white;
+	background-color: #787878;
+	height:100px;
+	margin:100px auto;
+	border-radius:25px;
+	}
+
 body {
 padding-top: 70px;
 height: 100%;

@@ -19,9 +19,8 @@
 
     <!-- Custom styles for this template -->
     <link href="{% static 'simple-sidebar.css' %}" rel="stylesheet">
-    <link href="{% static 'base-custom.css'%}" rel="stylesheet">
-    <link href="{% static 'docs/examples/navbar-fixed-top/navbar-fixed-top.css' %}" rel="stylesheet">
-    <link href="{% static 'navbar-custom.css'%}" rel="stylesheet">
+     <link href="{% static 'navbar-custom.css'%}" rel="stylesheet">
+    <link href="{% static 'base-custom.css' %}" rel="stylesheet">
     <link href="{% static 'homepage.css' %}" rel="stylesheet">
 
 
@@ -31,11 +30,13 @@
 
   {% include "navbar_base.html" %}
 
+ <div class="contacts" style="align:center;">
+For more information about Palimpsest, contact: <br> 
+Anjalie (aefield@princeton.edu)<br>
+ Gabe (gbanevic@princeton.edu)<br>
+ Nikitas (tampakis@princeton.edu)
 
- &nbsp For more information about Palipmsest, contact: <br> 
- &nbsp &nbsp &nbsp Anjalie (aefield@princeton.edu)<br>
- &nbsp &nbsp &nbsp Gabe (gbanevic@princeton.edu)<br>
- &nbsp &nbsp &nbsp Nikitas (tampakis@princeton.edu)
+</div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src={% static "dist/js/bootstrap.min.js" %}></script>
