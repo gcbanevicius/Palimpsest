@@ -50,10 +50,6 @@ width: 170px;
   cursor:pointer;
 }
 
-.commentary{
-  position: fixed;
-}
-
 input[type="button"], input[type="submit"], input[type="reset"], input[type="file"]::-webkit-file-upload-button, button {
 align-items: flex-start;
 color: #006633;
@@ -85,7 +81,7 @@ body {
   margin-left: 200px
 }
 
-.col-md-3 {
+/*.col-md-3 {
   max-width: 25%;
   width: 25%;
 }
@@ -93,7 +89,7 @@ body {
 .col-md-9 {
   max-width: 75%;
   width: 75%;
-}
+}*/
 
 #clickdivThumb {
   float: left;
@@ -106,3 +102,11 @@ body {
 .clickdiv {
   list-style-type: none;
 }
+
+.commentary{
+  position: fixed;
+  top: 75px;
+  bottom: 50px;
+  right: 50px;
+}
+ 

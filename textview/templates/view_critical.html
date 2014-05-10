@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid">
     <div class="row">
 
 
@@ -15,13 +14,12 @@
 {% endfor %}
         </div><!--/col-md-5-->
 
-        <div class="col-md-7">
-            <div id="viewerCanvas" class="commentary" style="width: 40%; height:80%"></div>
+        <div class="col-md-7" id="book-col">
+          <div id="viewerCanvas" class="commentary" style="width: 40%; height:80%"></div>
         </div><!--/col-md-7-->
 
 
     </div><!--/row-->
-</div ><!--/containter-->
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -33,6 +31,18 @@
         }
 
         google.setOnLoadCallback(initialize);
+
+        window.addEventListener('resize', function(event){
+            // if screen falls below 1000px, hide book
+            if (window.screen.width < 1000) {
+                $("#viewerCanvas").hide();
+            }
+            else {
+                $("#viewerCanvas").show();
+            }
+        });
+        
+
     </script>
 
 {% endblock %}
