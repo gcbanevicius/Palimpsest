@@ -5,7 +5,7 @@
     <div class="row">
 
 
-        <div class="col-md-6">
+        <div class="col-md-5">
 {% for i in text_left %}
 <span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
 	{% for word in i.1 %}
@@ -15,7 +15,7 @@
 {% endfor %}
         </div><!--/col-md-5-->
 
-        <div class="col-md-6">
+        <div class="col-md-7">
             <div id="viewerCanvas" class="commentary" style="width: 40%; height:80%"></div>
         </div><!--/col-md-7-->
 

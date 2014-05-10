@@ -61,6 +61,7 @@ def book(bk_start, view_mode, uid):
     curs = db_connect()
     query = (int(bk_start), uid)
     if view_mode == 1:
+        query = (int(bk_start), )
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND public = 't' ORDER BY line;""", query)
     elif view_mode == 2:
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND public = 'f' AND user_id = %s ORDER BY line;""", query)
@@ -76,6 +77,7 @@ def line(ln_start, view_mode, uid):
     ln_start = int(ln_start.split('.')[1])
     query = (bk_start, ln_start, uid)
     if view_mode == 1:
+        query = (bk_start, ln_start, )
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line = %s AND public = 't';""", query)
     elif view_mode == 2:
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line = %s AND public = 'f' AND user_id = %s;""", query)
@@ -106,6 +108,7 @@ def lineToLine(start, end, view_mode, uid):
     # get the first book
     query = (int(bk_start), int(ln_start), uid)
     if view_mode == 1:
+        query = (int(bk_start), int(ln_start), )
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line >= %s AND public = 't' ORDER BY line;""", query)
     elif view_mode == 2:
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line >= %s AND public = 'f' AND user_id = %s ORDER BY line;""", query)
@@ -126,6 +129,7 @@ def lineToLine(start, end, view_mode, uid):
         for i in range(bk_start+1, bk_end):
             query = (str(i), uid)
             if view_mode == 1:
+                query = (str(i), )
                 curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 't' ORDER BY line;""", query)
             elif view_mode == 2:
                 curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 'f' AND user_id = %s ORDER BY line;""", query)
@@ -138,6 +142,7 @@ def lineToLine(start, end, view_mode, uid):
     # now get the last book
     query = (str(bk_end), uid)
     if view_mode == 1:
+        query = (str(bk_end), )
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 't' ORDER BY line;""", query)
     elif view_mode == 2:
         curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 'f' AND user_id = %s ORDER BY line;""", query)
@@ -165,6 +170,7 @@ def bookToBook(start, end, view_mode, uid):
     # get the first book
     query = (int(bk_start), int(bk_end), uid)
     if view_mode == 1:
+        query = (int(bk_start), int(bk_end), )
         curs.execute("""SELECT * FROM textview_comment WHERE book >= %s AND book <= %s AND comment_text IS NOT NULL AND public = 't' ORDER BY book, line;""", query)
     elif view_mode == 2:
         curs.execute("""SELECT * FROM textview_comment WHERE book >= %s AND book <= %s AND comment_text IS NOT NULL AND public = 'f' AND user_id = %s ORDER BY book, line;""", query)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from textview import views
 
-
+import urllib2
 
 def index(request):
     return render(request, 'subscribers/index.html')
@@ -13,6 +13,7 @@ def index(request):
 def signin(request):
     c = {}
     c.update(csrf(request))    
+    request.session['curr_page'] = urllib2.unquote(request.GET.get('next'))
     return render_to_response('subscribers/signin.html', c)
 
 def login_error(request):
@@ -49,8 +50,9 @@ def signout(request):
     c = {}
     c.update(csrf(request))
     logout(request)
-    return render(request, 'homepage.html')
-
+    request.session['curr_page'] = urllib2.unquote(request.GET.get('next'))
+    return HttpResponseRedirect(request.session['curr_page'])
+    
 def signup(request):
     c = {}
     c.update(csrf(request))

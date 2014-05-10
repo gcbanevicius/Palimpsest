@@ -28,11 +28,11 @@
                 </ul>
               </li>
           {% if user.is_authenticated %}
-          <li><a href="{% url 'subscribers.views.signout' %}">Logout</a></li>
+          <li><a href="{% url 'subscribers.views.signout' %}?next={{ request.get_full_path|urlencode }}">Logout</a></li>
           </ul>
           <a class="navbar-brand pull-right" href="#"> Hello {{user.username}}!</a>
           {% else %}
-          <li><a href="{% url 'subscribers.views.signin' %}">Login</a></li>
+          <li><a href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">Login</a></li>
           </ul>
           <a class="navbar-brand pull-right" href="{% url 'subscribers.views.signup' %}"> Sign up!</a>
           {% endif %}

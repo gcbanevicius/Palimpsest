@@ -34,7 +34,6 @@ def render_error(request, error_msg, text_name = ''):
 
     return HttpResponse(temp.render(c))
 
-#@ensure_csrf_cookie
 def index(request, text_name=""):
     temp = loader.get_template('single_text.html')
 
@@ -177,7 +176,8 @@ def add_comment(request, text_name=""):
         return HttpResponse(temp.render(c))
 
     else:
-        return HttpResponseRedirect('/subscribers/signin')    
+    #    print '/subscribers/signin?next=%s' % request.get_full_path() 
+        return HttpResponseRedirect('/subscribers/signin') #?next=%s' % request.get_full_path() )    
 
 def view_comments(request, text_name=""):
     if request.user.is_authenticated():    
