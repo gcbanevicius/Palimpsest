@@ -27,10 +27,8 @@
 
 {% include "navbar_base.html" %}
 
-    <div class="container">
-    
-    <div class="row">
-    <div class="col-md-2">
+   <div class="row">
+    <div class="col-md-3">
 
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
@@ -81,6 +79,8 @@
 
    </div>
 
+ <div class="container">
+ 
    <!-- Modal (only appears on click)-->
 <div class="modal fade" id="addComment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -189,7 +189,7 @@
 
 <!-- end modals -->
      
-  <div class="col-md-10">
+  <div class="col-md-9">
   {% block content%}
   {% endblock %}
   </div><!-- /.col-md -->
@@ -221,12 +221,6 @@
 
         function changeMode(id) {
             
-            if (id == 'addcomment') {
-                //window.location.replace("/subscribers/signin")
-                //alert(Session[]);
-
-            }
-
             document.getElementById("addcomment").style.color = '#006633';
 
             if (curr_mode == id) {
@@ -312,13 +306,10 @@
         // NB: must be 1 for TRUE, 0 for FALSE
         if ($('#public').is(':checked')) {
             var is_pub = 1;
-            alert("public");
         }
         else {
             var is_pub = 0;
-            alert("private");
         }
-
 
 	    $.ajax({
 		    type: 'POST',

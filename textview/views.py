@@ -18,12 +18,14 @@ def render_error(request, error_msg, text_name = ''):
     temp = loader.get_template('error.html')
    
     text = [error_msg] + [
-        ('', '', 'Enter a query range at left in one of the following forms:', '', ''),
+        ('', '', 'Enter a query range at left in one of the following forms (hypen optional):', '', ''),
         ('', '', 'Line to line (e.g. 1.10-2.10)', '', ''),
         ('', '', 'Book to book (e.g. 1-2)', '', ''),
         ('', '', 'A single line (e.g. 1.10)', '', ''),
         ('', '', 'A single book (e.g. 1)', '', ''),        
     ]
+
+    print text
 
     c = RequestContext (request, {
         'text_id': text_name,
@@ -144,11 +146,8 @@ def add_comment(request, text_name=""):
         temp = loader.get_template('add_comment.html')
 
         if request.is_ajax():
-            print "AJAX request..."
             path = request.POST['line']
-            print path
             path = path.split('.')
-            print path
             
             # NB POST['is_pub'] must be '1' for TRUE, '0' f`r FALSE
             if request.POST['is_pub'] == '1':
@@ -188,30 +187,30 @@ def view_comments(request, text_name=""):
         if request.method == 'POST':
             # set 'comment_type', since we know it's a POST
             if 'comment_type' in request.POST:
-                print request.POST['comment_type'], 'hiya'
+                #print request.POST['comment_type'], 'hiya'
                 request.session['comment_view_mode'] = request.POST['comment_type']
 
             form = QueryForm(request.POST)
             if form.is_valid():
                 q_range = str(form.cleaned_data['range'])
                 request.session['query_range'] = q_range
+            # if form was invalid, return suggestion message
             else:
-                if 'query_range' in request.session:   
-                    q_range = request.session['query_range'] 
-                else:
-                    q_range = '1'
-                    request.session['query_range'] = q_range
+                return render_error(request, ('', '', '', '', ''), text_name)
 
         elif request.method == 'GET':
             if 'query_range' in request.session:
                 q_range = request.session['query_range']
+            # if we haven't made a previous query, return suggestion message
             else:
-                q_range = '1'
-                request.session['query_range'] = q_range
+                return render_error(request, ('', '', '', '', ''), text_name)
     
         text_left = query.startQuery(q_range)
         error = text_left[1] # error from query.py
         text_left = text_left[0] # actual list of text-tuples
+
+        if error != 0:
+            return render_error(request, text_left[0], text_name)
  
         #print text_left
     ###  END get Latin text  ###
@@ -225,7 +224,7 @@ def view_comments(request, text_name=""):
         q_range.replace('-', ' ')
         q_list = q_range.split()
 
-        text_right = queryComm.startQuery(q_range, int(view_mode)) # I am SICK of everything being a string...
+        text_right = queryComm.startQuery(q_range, int(view_mode), request.user.id) # I am SICK of everything being a string...
 
         newleft = []
         for i in text_left:
@@ -237,11 +236,9 @@ def view_comments(request, text_name=""):
             'text_right': text_right,
         })
 
-        print "about to return from view_comments..."
         return HttpResponse(temp.render(c))
         
     else:
-        print request.get_full_path()
         request.session['curr_page'] = request.get_full_path()
         return HttpResponseRedirect('/subscribers/signin')
 
