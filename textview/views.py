@@ -5,6 +5,7 @@ from django.template import loader, Context, Template
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.template import RequestContext
 from django.core.context_processors import csrf
+from django.contrib.auth.models import User
 
 from textview.models import QueryForm, Comment
 
