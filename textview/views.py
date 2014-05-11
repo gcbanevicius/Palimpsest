@@ -155,7 +155,9 @@ def add_comment(request, text_name=""):
             if request.POST['is_pub'] == '1':
                 # if error mode engaged, go no further
                 #print "id = 0, public = t"
-                comment = Comment(book=int(path[0]), line=int(path[1]), user_id='0', public=1, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+                comment = Comment(book=int(path[0]), line=int(path[1]), user_id=request.user.id, public=1, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
+            elif request.POST['is_pub'] == '2':
+                comment = Comment(book=int(path[0]), line=int(path[1]), user_id=0, public=1, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
             else:
                 comment = Comment(book=int(path[0]), line=int(path[1]), user_id=request.user.id, public=0, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'])
 
@@ -237,7 +239,8 @@ def view_comments(request, text_name=""):
             'text_left': newleft, 
             'text_right': text_right,
             'title' : get_title(text_name),
-            'author': get_author(text_name)
+            'author': get_author(text_name),
+            'user_names': User.objects.all()
         })
 
         return HttpResponse(temp.render(c))

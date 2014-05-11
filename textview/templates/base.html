@@ -115,6 +115,11 @@
                 <input type="radio" name="optionsRadios" id="private" value="option2"> Private Comment
                 </label>
             </div>
+            <div class="radio">
+                <label>
+                <input type="radio" name="optionsRadios" id="anonpublic" value="option3"> Anonymous Public Comment
+                </label>
+            </div>   
         </form>
       </div>
       <div class="modal-footer">
@@ -310,6 +315,9 @@
         // NB: must be 1 for TRUE, 0 for FALSE
         if ($('#public').is(':checked')) {
             var is_pub = 1;
+        }
+        else if ($('#anonpublic').is(':checked')){
+            var is_pub = 2;
         }
         else {
             var is_pub = 0;

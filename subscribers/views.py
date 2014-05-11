@@ -1,14 +1,30 @@
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.template import loader, Context, Template
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from textview import views
-
 import urllib2
 
 def index(request):
-    return render(request, 'subscribers/index.html')
+    temp = loader.get_template('subscribers/index.html')
+
+    c = Context ({
+      'usersname': User.objects.all()
+      })
+
+    return HttpResponse(temp.render(c))
+
+def profile(request, user_name=''):
+    temp = loader.get_template('subscribers/profile.html')
+
+    c = Context ({
+      'usersname': User.objects.get(username=user_name)
+      })
+
+    return HttpResponse(temp.render(c))
+
 
 def signin(request):
     c = {}

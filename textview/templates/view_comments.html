@@ -24,7 +24,15 @@
 	       {#{ gal_war_eng.text_field }#} 
 	       {%for i in text_right %}
 		   {#{i.text_field}#}
-           {{ i.1 }}.{{ i.2 }} &nbsp &nbsp &nbsp {{ i.6 }}
+		   {% if i.4 == 0%}
+           {{ i.1 }}.{{ i.2 }} &nbsp &nbsp &nbsp Anonymous User: {{ i.6 }}
+           {% else %}
+		   {%for the_user in user_names%}
+		   {% if the_user.id == i.4 %}
+           {{ i.1 }}.{{ i.2 }} &nbsp &nbsp &nbsp {{ the_user.username }} : {{ i.6 }}
+           {% endif %}
+		   {% endfor %}  
+		   {% endif %}         
            {% if i.3 == False %}
                <em>***</em>
            {% endif %}
