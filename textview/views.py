@@ -28,6 +28,8 @@ def render_error(request, error_msg, text_name = ''):
     c = RequestContext (request, {
         'text_id': text_name,
         'text_lines': text,
+        'title' : get_title(text_name),
+       'author': get_author(text_name)
     })
 
     return HttpResponse(temp.render(c))
@@ -243,15 +245,6 @@ def view_comments(request, text_name=""):
     else:
         request.session['curr_page'] = request.get_full_path()
         return HttpResponseRedirect('/subscribers/signin')
-
-def vocab(request, text_name=""):
-    temp = loader.get_template('vocab.html')
-
-    c = Context ({
-      'text_id': text_name,
-      })
-
-    return HttpResponse(temp.render(c))
     
     
 def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
