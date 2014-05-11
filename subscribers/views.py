@@ -1,18 +1,35 @@
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.template import loader, Context, Template
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from textview import views
-
-
+import urllib2
 
 def index(request):
-    return render(request, 'subscribers/index.html')
+    temp = loader.get_template('subscribers/index.html')
+
+    c = Context ({
+      'usersname': User.objects.all()
+      })
+
+    return HttpResponse(temp.render(c))
+
+def profile(request, user_name=''):
+    temp = loader.get_template('subscribers/profile.html')
+
+    c = Context ({
+      'usersname': User.objects.get(username=user_name)
+      })
+
+    return HttpResponse(temp.render(c))
+
 
 def signin(request):
     c = {}
     c.update(csrf(request))    
+    request.session['curr_page'] = urllib2.unquote(request.GET.get('next'))
     return render_to_response('subscribers/signin.html', c)
 
 def login_error(request):
@@ -36,14 +53,22 @@ def validate(request):
             return render_to_response('subscribers/login_error.html', c)
     else:
         return render_to_response('subscribers/login_error.html', c)
-    return render(request, 'homepage.html')
+    #return render(request, 'homepage.html')
+    if 'curr_page' in request.session:
+        print request.session['curr_page'], "!?!"
+        #return render(request, request.session['curr_page'])
+        return HttpResponseRedirect(request.session['curr_page'])
+    else:
+        print 'No session var for last page...'
+        return render(request, 'homepage.html')
 
 def signout(request):
     c = {}
     c.update(csrf(request))
     logout(request)
-    return render(request, 'homepage.html')
-
+    request.session['curr_page'] = urllib2.unquote(request.GET.get('next'))
+    return HttpResponseRedirect(request.session['curr_page'])
+    
 def signup(request):
     c = {}
     c.update(csrf(request))
@@ -63,4 +88,10 @@ def signup_success(request):
             ln = request.POST['lastn']
         
             User.objects.create_user(un, em, pw, first_name=fn, last_name=ln)
-            return render(request, 'homepage.html')
+
+            if 'curr_page' in request.session:
+                print request.session['curr_page'], "!?!"
+                return render(request, request.session['curr_page'])
+            else:
+                print 'No session var for last page...'
+                return render(request, 'homepage.html')

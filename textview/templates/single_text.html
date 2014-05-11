@@ -2,19 +2,31 @@
 
 {% block content %}
 
-{# {% for i in gal_war_eng %} #}
-{# <span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp {{ i.2 }} <br> #}
-{# {% endfor %} #}
+<div class="row">
+<div class="col-md-3"></div>
 
-{% for i in text_lines%}
-<span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
-	{% for word in i.1 %}
-		<span id='{{word}}' class="lat_word"> {{word}} </span>
-	{% endfor %}
- 	<br>
-{% endfor %}
+<div class="col-md-9">
+    {% for i in text_lines%}
+        <span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
+	    {% for word in i.1 %}
+		    <span class="lat_word" data-word="{{word}}"> {{word}} </span>
+	    {% endfor %}
+ 	    <br>
+    {% endfor %}
+</div>
 
+</div> <!-- /row -->
 
 {% endblock %}
 
-{#{ gal_war_eng.text_field}#} 
+{#% if error_mode == 1 %}
+    <p>{{ text_lines.0.1 }}</p>
+    <br>
+    <p>{{ text_lines.1.1 }}</p>
+    <ul style="list-style-type:none">
+    {% for line in text_lines|slice:"2:" %}
+        <li>{{ line.1 }}</li>
+    {% endfor %}
+    </ul>
+{% else %#}
+

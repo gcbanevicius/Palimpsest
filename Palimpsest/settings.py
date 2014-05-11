@@ -55,8 +55,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 #    'south',
     'textview',
-    'texts',
-    'subscribers'
+    'subscribers',
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -67,6 +67,31 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.facebook.FacebookOAuth2',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.twitter.TwitterOAuth',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_FACEBOOK_KEY = '140205772850490'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'eb300ece5a73732d34624e5978ca8a7d'
 
 ROOT_URLCONF = 'Palimpsest.urls'
 
@@ -97,15 +122,15 @@ DATABASES = {'default': dj_database_url.config() }#, 'ENGINE': 'django.db.backen
 #    }
 #}
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#        'NAME': 'simple_ltree', #'simple_postgres',
-#        'USER': 'nik1tako',
-#        'PASSWORD': 'password',
-#        'HOST': 'localhost',
-#    }
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'simple_ltree', #'simple_postgres',
+        'USER': 'nik1tako',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

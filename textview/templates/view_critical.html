@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+
+
+        <div class="col-md-5">
+{% for i in text_left %}
+<span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
+	{% for word in i.1 %}
+		<span class="lat_word" data-word="{{word}}"> {{word}} </span>
+	{% endfor %}
+ 	<br>
+{% endfor %}
+        </div><!--/col-md-5-->
+
+        <div class="col-md-7" id="book-col">
+          <div id="viewerCanvas" class="commentary" style="width: 40%; height:80%"></div>
+        </div><!--/col-md-7-->
+
+
+    </div><!--/row-->
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("books", "0");
+
+        function initialize() {
+            var viewer = new google.books.DefaultViewer(document.getElementById('viewerCanvas'));
+            viewer.load('{{isbn}}');
+        }
+
+        google.setOnLoadCallback(initialize);
+
+        window.addEventListener('resize', function(event){
+            // if screen falls below 1000px, hide book
+            if (window.screen.width < 1000) {
+                $("#viewerCanvas").hide();
+            }
+            else {
+                $("#viewerCanvas").show();
+            }
+        });
+        
+
+    </script>
+
+{% endblock %}

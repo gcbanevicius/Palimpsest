@@ -4,8 +4,13 @@ import sys, re, os
 import psycopg2
 import urlparse
 
-def db_connect():
+def getDecimal(numString):
+    return int(numString.split('.')[-1]) 
 
+def getInteger(numString):
+    return int(numString.split('.')[0]) 
+
+def db_connect():
 # Register database schemes in URLs.
     urlparse.uses_netloc.append('postgres')
     urlparse.uses_netloc.append('mysql')
@@ -41,8 +46,8 @@ def db_connect():
         print 'Unexpected error:', sys.exc_info()
     
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
@@ -52,327 +57,186 @@ def db_connect():
     return curs
 
 
-def book(bk_start):
+def book(bk_start, view_mode, uid):
     curs = db_connect()
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    query = (int(bk_start), uid)
+    if view_mode == 1:
+        query = (int(bk_start), )
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND public = 't' ORDER BY line;""", query)
+    elif view_mode == 2:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND public = 'f' AND user_id = %s ORDER BY line;""", query)
+    else:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND (public = 't' OR user_id = %s) ORDER BY line;""", query)
     lines = curs.fetchall()
     #print lines
     return lines
 
-def line(ln_start):
+def line(ln_start, view_mode, uid):
     curs = db_connect()
-    query = (str(ln_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    bk_start = int(ln_start.split('.')[0])
+    ln_start = int(ln_start.split('.')[1])
+    query = (bk_start, ln_start, uid)
+    if view_mode == 1:
+        query = (bk_start, ln_start, )
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line = %s AND public = 't';""", query)
+    elif view_mode == 2:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line = %s AND public = 'f' AND user_id = %s;""", query)
+    else:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line = %s AND (public = 't' OR user_id = %s);""", query)
     line = curs.fetchall()
-    #print line
     return line
 
-def lineToLine(start, end):
+def lineToLine(start, end, view_mode, uid):
     curs = db_connect()
     
-    bk_start = int(start.split('.')[0])
-    bk_end = int(end.split('.')[0])
+    bk_start = getInteger(start)
+    bk_end = getInteger(end)
 
-    ln_start = int(start.split('.')[1])
-    ln_end = int(end.split('.')[1])
+    ln_start = getDecimal(start)
+    ln_end = getDecimal(end) 
 
     if int(bk_start) > int(bk_end):
-        print "Starting position is greater than ending position"
-        exit(1)
+        print 'Starting position is greater than ending position'
+        rspStr = 'Starting position is greater than ending position'
+        return [('', '', rspStr, '', '')]
 
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, ln_end
+    print "Book range:", bk_start, bk_end
+    print "Linerange:", ln_start, ln_end
 
     lines = []
 
     # get the first book
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    query = (int(bk_start), int(ln_start), uid)
+    if view_mode == 1:
+        query = (int(bk_start), int(ln_start), )
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line >= %s AND public = 't' ORDER BY line;""", query)
+    elif view_mode == 2:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line >= %s AND public = 'f' AND user_id = %s ORDER BY line;""", query)
+    else:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND line >= %s AND (public = 't' OR user_id = %s) ORDER BY line;""", query)
+
     lines.extend(curs.fetchall())
-    
+
     # if the lines only span one book
     if bk_start == bk_end:
-        lines = lines[ln_start-1 : ln_end]
-        #print lines
+        # behold the CORRECT way to do things
+        print lines
+        lines = [ line for line in lines if line[2] <= ln_end ]
         return lines 
 
     # if there's at least one full book between them
     elif bk_end - bk_start > 1:
         for i in range(bk_start+1, bk_end):
-            query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+            query = (str(i), uid)
+            if view_mode == 1:
+                query = (str(i), )
+                curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 't' ORDER BY line;""", query)
+            elif view_mode == 2:
+                curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 'f' AND user_id = %s ORDER BY line;""", query)
+            else:
+                curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND ( public = 't' OR user_id = %s) ORDER BY line;""", query)
             lines.extend(curs.fetchall())
+            lines = [ line for line in lines if line[1] > bk_start or line[2] >= ln_start ]
+
             
     # now get the last book
-    query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    query = (str(bk_end), uid)
+    if view_mode == 1:
+        query = (str(bk_end), )
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 't' ORDER BY line;""", query)
+    elif view_mode == 2:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND public = 'f' AND user_id = %s ORDER BY line;""", query)
+    else:
+        curs.execute("""SELECT * FROM textview_comment WHERE book = %s AND comment_text IS NOT NULL AND (public = 't' OR user_id = %s) ORDER BY line;""", query)
     lines.extend(curs.fetchall()[:ln_end])
-    
+    lines = [ line for line in lines if line[1] < bk_end or line[2] <= ln_end ]
+     
     #print lines
     return lines
 
-def bookToBook(start, end):
+def bookToBook(start, end, view_mode, uid):
     curs = db_connect()
     
     bk_start = int(start) #int(start.split('.')[0])
     bk_end = int(end) #int(end.split('.')[0])
-
-    #ln_start = int(start.split('.')[1])
-    #ln_end = int(end.split('.')[1])
 
     # equality OK; strange to query one book as a range, but acceptable
     if int(bk_start) > int(bk_end):
         print "Starting position is greater than ending position"
-        exit(1)
-
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, ln_end
+        return [('', '', '', '', '')]
 
     lines = []
 
     # get the first book
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
+    query = (int(bk_start), int(bk_end), uid)
+    if view_mode == 1:
+        query = (int(bk_start), int(bk_end), )
+        curs.execute("""SELECT * FROM textview_comment WHERE book >= %s AND book <= %s AND comment_text IS NOT NULL AND public = 't' ORDER BY book, line;""", query)
+    elif view_mode == 2:
+        curs.execute("""SELECT * FROM textview_comment WHERE book >= %s AND book <= %s AND comment_text IS NOT NULL AND public = 'f' AND user_id = %s ORDER BY book, line;""", query)
+    else:
+        curs.execute("""SELECT * FROM textview_comment WHERE book >= %s AND book <= %s AND comment_text IS NOT NULL AND (public = 't' OR user_id = %s) ORDER BY book, line;""", query)
     lines.extend(curs.fetchall())
-    
-    # if the lines only span one book
-    if bk_start == bk_end:
-        #lines = lines[ln_start-1 : ln_end]
-        #print lines
-        return lines 
 
-    # if there's at least one full book between them
-    elif bk_end - bk_start > 1:
-        for i in range(bk_start+1, bk_end):
-            query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-            lines.extend(curs.fetchall())
-            
-    # now get the last book
-    query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-    lines.extend(curs.fetchall())
-    
-    #print lines
-    return lines
+    return linesp
 
-def bookToLine(start, end):
-    curs = db_connect()
-    
-    bk_start = int(start) #int(start.split('.')[0])
-    bk_end = int(end.split('.')[0])
-
-    ln_start = 1; #int(start.split('.')[1])
-    ln_end = int(end.split('.')[1])
-
-    if int(bk_start) > int(bk_end):
-        print "Starting position is greater than ending position"
-        exit(1)
-
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, ln_end
-
-    lines = []
-
-    # get the first book
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-    lines.extend(curs.fetchall())
-    
-    # if the lines only span one book
-    if bk_start == bk_end:
-        lines = lines[: ln_end]
-        #print lines
-        return lines 
-
-    # if there's at least one full book between them
-    elif bk_end - bk_start > 1:
-        for i in range(bk_start+1, bk_end):
-            query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-            lines.extend(curs.fetchall())
-            
-    # now get the last book
-    query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-    lines.extend(curs.fetchall()[:ln_end])
-    
-    #print lines
-    return lines
-
-def lineToBook(start, end):
-    curs = db_connect()
-    
-    bk_start = int(start.split('.')[0])
-    bk_end = int(end) #int(end.split('.')[0])
-
-    ln_start = int(start.split('.')[1])
-    #ln_end = int(end.split('.')[1])
-
-    # note special case that even equality means start pos is too large
-    if int(bk_start) >= int(bk_end):
-        print "Starting position is greater than ending position"
-        exit(1)
-
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, "end" #ln_end
-
-    lines = []
-
-    # get the first book
-    query = (str(bk_start), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-    lines.extend(curs.fetchall())
-    
-    # if the lines only span one book
-    if bk_start == bk_end:
-        lines = lines[ln_start-1 : ]
-        #print lines
-        return lines 
-
-    # if there's at least one full book between them
-    elif bk_end - bk_start > 1:
-        for i in range(bk_start+1, bk_end):
-            query = (str(i), )
-            curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-            lines.extend(curs.fetchall())
-            
-    # now get the last book
-    query = (str(bk_end), )
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s AND comment IS NOT NULL ORDER BY line_num;""", query)
-    lines.extend(curs.fetchall())
-    
-    #print lines
-    return lines
-    
-def startQuery(queryStr):
-    #print queryStr
+def startQuery(queryStr, view_mode, uid):
 
     if not queryStr:
         print "Please input a single query or query range"
-        exit(1)
+        return [('', '', '', '', '')]
 
-    #query = sys.argv[1]      
     query = queryStr.replace('-', ' ')
-    #print query
     q_list = query.split() # no options will do any whitespace
-    #print q_list
     q_len = len(query.split())
 
     if q_len > 2:
         print "Please limit query to single index or range of two"
-        exit(1)
+        return [('', '', '', '', '')]
 
     elif q_len == 2:
         match = re.match(r'^\s*\d+\s*\d+\s*$', query)
         if match:
             #print '1-1'
-            q_result = bookToBook(q_list[0], q_list[1])
+            q_result = bookToBook(q_list[0], q_list[1], view_mode, uid)
 
         match = re.match(r'^\s*\d+\.\d+\s*\d+\.\d+\s*$', query)
         if match:
             #print '2-2'
-            q_result = lineToLine(q_list[0], q_list[1])
+            q_result = lineToLine(q_list[0], q_list[1], view_mode, uid)
         
         match = re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query)
         if match:
             #print '1-2'
-            q_result = bookToLine(q_list[0], q_list[1])
+            rspStr = 'Please input a valid query!'
+            return [('', '', rspStr, '', '')]
 
         match = re.match(r'^\s*\d+\.\d+\s*\d+\s*$', query)
         if match:
             #print '2-1'
-            #print match.group()
-            #print q_list[0] + ' and ' + q_list[1]
-            q_result = lineToBook(q_list[0], q_list[1])
-
+            rspStr = 'Please input a valid query!'
+            return [('', '', rspStr, '', '')]
 
     elif q_len == 1:
         match = re.match(r'^\s*\d+\s*$', query)
         if match:
             #print '1'
-            #print match.group()
-            q_result = book(match.group())
+            q_result = book(match.group(), view_mode, uid)
 
         match = re.match(r'^\s*\d+\.\d+\s*$', query)
         if match:
             #print '2'
-            #print match.group()
-            q_result = line(match.group())
+            q_result = line(match.group(), view_mode, uid)
 
     else:
         print "Please input a query"
-        exit(1) 
+        return [('', '', 'Please input a query', '', '')]
 
-    # all done!
     #print q_result    
     return q_result
  
 def main():
-    #print sys.argv
-    #print len(sys.argv)
-    if len(sys.argv) < 2:
-        print "Please input a single query or query range"
-        exit(1)
-
-    query = sys.argv[1]      
-    query = query.replace('-', ' ')
-    #print query
-    q_list = query.split() # no options will do any whitespace
-    #print q_list
-    q_len = len(query.split())
-
-    if q_len > 2:
-        print "Please limit query to single index or range of two"
-        exit(1)
-
-    elif q_len == 2:
-        match = re.match(r'^\s*\d+\s*\d+\s*$', query)
-        if match:
-            #print '1-1'
-            q_result = bookToBook(q_list[0], q_list[1])
-
-        match = re.match(r'^\s*\d+\.\d+\s*\d+\.\d+\s*$', query)
-        if match:
-            #print '2-2'
-            q_result = lineToLine(q_list[0], q_list[1])
-        
-        match = re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query)
-        if match:
-            #print '1-2'
-            q_result = bookToLine(q_list[0], q_list[1])
-
-        match = re.match(r'^\s*\d+\.\d+\s*\d+\s*$', query)
-        if match:
-            #print '2-1'
-            #print match.group()
-            #print q_list[0] + ' and ' + q_list[1]
-            q_result = lineToBook(q_list[0], q_list[1])
-
-
-    elif q_len == 1:
-        match = re.match(r'^\s*\d+\s*$', query)
-        if match:
-            #print '1'
-            #print match.group()
-            q_result = book(match.group())
-
-        match = re.match(r'^\s*\d+\.\d+\s*$', query)
-        if match:
-            #print '2'
-            #print match.group()
-            q_result = line(match.group())
-
-    else:
-        print "Please input a query"
-        exit(1) 
-
-    # all done!
-    #print q_result    
-    return q_result
-    
-
+    return startQuery(sys.argv[1], 1, 0)
 
 if __name__ == "__main__":
     main()

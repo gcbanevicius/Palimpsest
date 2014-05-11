@@ -10,3 +10,6 @@ def home(request):
 
 def about(request):
 	 return HttpResponse(render_to_response('about.html'))
+
+def contact(request):
+	 return HttpResponse(render_to_response('contact.html'))

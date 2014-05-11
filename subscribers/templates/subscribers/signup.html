@@ -59,9 +59,13 @@
                       </div>
                   </div>
               </form>
-
-
           </div>
+      </div>
+      <div class="row">
+          <div class="col-md-10">
+              <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Login with Facebook</a>
+          </div>
+      </div>
 
   </body>
 </html>

@@ -1,0 +1,22 @@
+
+{% extends "lbase.html" %}
+
+{% block content %}
+
+      <div class="row">
+          <div class="col-md-12">
+              <h1 align="center"> User Profile for {{usersname.username}}</h1>
+          </div>
+      </div>
+      <div class="row">
+          <ul>
+              <p> First Name: {{usersname.first_name}} </p>
+              <p> Last Name: {{usersname.last_name}} </p>
+              <p> Last Login: {{usersname.last_login}} </p>              
+              <p> Date Joined: {{usersname.date_joined}} </p>                                                        
+          </ul>
+      </div>
+
+  </body>
+</html>
+{% endblock %}

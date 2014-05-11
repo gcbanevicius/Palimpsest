@@ -17,7 +17,6 @@
     <!-- Custom styles for this template -->
     <link href="{% static 'simple-sidebar.css' %}" rel="stylesheet">
     <link href="{% static 'base-custom.css'%}" rel="stylesheet">
-    <link href="{% static 'docs/examples/navbar-fixed-top/navbar-fixed-top.css' %}" rel="stylesheet">
     <link href="{% static 'navbar-custom.css'%}" rel="stylesheet">
 
 
@@ -26,24 +25,20 @@
   <body>
 
 {% include "navbar_base.html" %}
-
-    <div class="container">
-
-     <div class="row">
-    <div class="col-md-2">
+    <div id="wrapper">
 
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
-                <li id="tool-box"> <h5> Views </h5>
-                <div class="row">
+                                <li id="tool-box"> <h5> Views </h5>
+
                 <li>
                     <div class="col-md-8">
                         <div class="input-group">
                             <!-- in a perfect world, I'd do this in AJAX, but the form action is what workd -->
-                            <form action="." method="POST">{% csrf_token %}
+                            <form action="" method="POST">{% csrf_token %}
                             {{ form.as_p }}
-                                <input type="text" class="form-control" name="range" placeholder="e.g. 1.10-1.15"/> <!-- onkeypress="queryBox(event)" /> --><br/>
+                                <input type="text" class="form-control" name="range" placeholder="e.g. 1.10-1.15"/> <br/>
                                 <input type="submit" value="Submit" />
                             </form>
                         </div>
@@ -52,26 +47,50 @@
                     <div class="col-md-4">
                     </div>
                 </li>
+                </li>
                 <li><a href="{% url 'index' text_name=text_id %}">View Plain Text</a>
                 </li>
                 <li><a href="{% url 'two_text' text_name=text_id %}">View Translation</a>
                 </li>
-                <li><a href="{% url 'view_comments' text_name=text_id %}">View User Comments</a>
+                {% if user.is_authenticated %}
+                <li><a class="handhover" id=viewComments onclick="viewUserComments()">View User Comments</a>
                 </li>
+                {% else %}
+                <li><a id="viewComments" class="handhover" href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">View User Comments</a>
+                </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <li><a class="handhover" id=viewcritical onclick="viewcommentary()">View Commentary</a>
+                </li>
+                {% else %}
+                <li><a id="viewcritical" class="handhover" href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">View Commentary</a>
+                </li>
+                {% endif %}
+
                 <li> <h5> Tools </h5> </li>
-                <li><a id="commentary" onclick="changeMode('commentary')">Commentary</a>
-                </li>
+
                 <!--li><a id="vocab" onclick="changeMode('vocab')" href="{% url 'vocab' text_name=text_id %}">Vocab</a-->
-                <li><a id="vocab" onclick="vocabToggle()">Vocab</a>
+                <li><a id="vocab" class="handhover" onclick="vocabToggle()">Vocab</a>
                 </li>
-                <li><a id="addcomment" onclick="changeMode('addcomment')">Add Comment</a>
+                {% if user.is_authenticated %}
+                <li><a id="addcomment" class="handhover" onclick="changeMode('addcomment')">Add Comment</a>
                 </li>
+                {% else %}
+                <li><a id="addcomment" class="handhover" href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">Add Comment</a>
+                </li>
+                {% endif %}
 
             </ul>
         </div>
 
-   </div>
 
+  <div id="page-content-wrapper">
+  {% block content%}
+  {% endblock %}
+  </div><!-- /.col-md -->
+
+
+ 
    <!-- Modal (only appears on click)-->
 <div class="modal fade" id="addComment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -86,48 +105,106 @@
                 <label for="name"><span id="commenthead"></span></label>
                 <textarea class="form-control" rows="3" id="commentmodaltext"></textarea>
             </div>
+            <div class="radio">
+                <label>
+                <input type="radio" name="optionsRadios" id="public" value="option1" checked> Public Comment
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                <input type="radio" name="optionsRadios" id="private" value="option2"> Private Comment
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                <input type="radio" name="optionsRadios" id="anonpublic" value="option3"> Anonymous Public Comment
+                </label>
+            </div>            
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="commentAdd()">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 
 
-   <!-- Vocab Modal (only appears on click)-->
-<div class="modal fade" id="vocab" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <!-- Modal to search for Googlebook (only appears on click)-->
+<div class="modal fade" id="searchbook" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
+ aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="vocabModalLabel">Vocab Lookup</h4>
+        <h4 class="modal-title" id="searchbar">Google Book Selection</h4>
       </div>
       <div class="modal-body">
-        <form role="form">
-            <div class="form-group">
-                <label for="name"><span id="vocabhead"></span></label>
-                <textarea class="form-control" rows="3" id="vocabmodaltext"></textarea>
-            </div>
-        </form>
+            <label for="name"><span id="bookhead"></span></label>
+
+                <form id="booksubmit">
+                    <div class="form-group">
+                    <label for="name">Book Search</label>
+                    <input type="text" class="form-control" id="googleval" 
+                    placeholder="Enter item to search for">
+                    </div>
+                    <button id="searchme" type="button" onclick=googlesearch("{% url 'view_critical' text_name=text_id isbn_num='X1XXXXX' %}") class="btn btn-default">Submit</button>
+                </form>
+      </div>
+      <div id="searchresults" class="searchdisplay">
+            <ul id="resultslist" class="bookview"></ul>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="vocabLookup()">Save changes</button>
+        <button  class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
-     
-  <div class="col-md-10">
-  {% block content%}
-  {% endblock %}
-  </div><!-- /.col-md -->
-</div><!-- /.row -->
 
-    </div> <!-- /container -->
+<!-- Modal for viewing user comments (only appears on click)-->
+<div class="modal fade" id="viewUserComm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="viewUserCommBox">View User Comments</h4>
+      </div>
+      <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                    
+                    <div class="radio">
+                        <label>
+                        <input type="radio" name="optionsRadios" id="viewUserPub" value="option1" checked> Public comments
+                        </label>
+                    </div>
+                    <div class="radio">
+                            <label>
+                            <input type="radio" name="optionsRadios" id="viewUserPriv" value="option2"> Private (your own!) comments
+                            </label>
+                    </div>
+                    <div class="radio">
+                            <label>
+                            <input type="radio" name="optionsRadios" id="viewUserPubPriv" value="option3"> Public and private comments
+                            </label>
+                    </div>
+
+                    </div>
+                </form>
+                <br>
+                <p><em>Comments will appear to the right of the text.</em></p>
+                <p><em> The '***' mark your private comments.</em></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="callViewComments()" class="btn btn-default" data-dismiss"modal">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- end modals -->
+
 
 
     <!-- Bootstrap core JavaScript
@@ -142,6 +219,7 @@
         var linenum_global;
         var curr_mode = "None";
         var vocab_on = 0;
+        var vocab_open = 0;
 
         function queryBox(e) {
             if (e.keyCode == 13) {
@@ -151,8 +229,7 @@
         }
 
         function changeMode(id) {
-
-            document.getElementById("commentary").style.color = '#006633';
+            
             document.getElementById("addcomment").style.color = '#006633';
 
             if (curr_mode == id) {
@@ -193,99 +270,288 @@
         }
         }
 
-	// using jQuery
-	function getCookie(name) {
-	var cookieValue = null;
-	if (document.cookie && document.cookie != '') {
+    // using jQuery
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) { 
-			    var cookie = jQuery.trim(cookies[i]);
-			    // Does this cookie string begin with the name we want?
-			    if (cookie.substring(0, name.length + 1) == (name + '=')) {
-	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-		            break;
-			    }
-			    }
-			    }
-			    return cookieValue;
-			    }
-			    
+                var cookie = jQuery.trim(cookies[i]);
+                
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+                
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
 
-
-        function commentAdd() {         
+    function commentAdd() {         
         var newComment = document.getElementById("commentmodaltext").value;
         document.getElementById("commentmodaltext").value = '';
-	
+    
         var text_name = "{{text_id}}"
-        
-        alert(newComment + '; ' + text_name +  '; ' + linenum_global);
-        //alert(newComment);
-        //alert(text_name);
-        //alert(linenum_global);
+        var user_name = "{{user.username}}"
 
-			    var csrftoken = getCookie('csrftoken');
-			    
-			    $.ajaxSetup({
-			    beforeSend: function(xhr, settings) {
-			    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			    }
-			    });
-
-			    $.ajax({
-			    type: 'POST',
-			    url: './add_comment',
-			    data: {'text_name': text_name, 'comment_text': newComment, 'line': linenum_global },
-		    });
-
-			    }
-
-        function vocabToggle() {
-            if (vocab_on == 0) {
-                vocab_on = 1;
-                document.getElementById("vocab").style.color = '#700000';
-                $('.lat_word').addClass('special');
-                $(".lat_word").popover('enable');
+        var csrftoken = getCookie('csrftoken');
+                
+        $.ajaxSetup({
+            crossDomain: false, // obviates need for sameOrigin test
+            beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
-            else {
-                vocab_on = 0;
-                document.getElementById("vocab").style.color = '#006633';
-                $('.lat_word').removeClass('special');
-                $(".lat_word").popover('hide');
-                $(".lat_word").popover('disable');
             }
+        });
 
-
+        // CHECK if it is public (or if ($('#private').is(':checked')) )
+        // NB: must be 1 for TRUE, 0 for FALSE
+        if ($('#public').is(':checked')) {
+            var is_pub = 1;
         }
+        else if ($('#anonpublic').is(':checked')){
+            var is_pub = 2;
+        }
+        else {
+            var is_pub = 0;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: './add_comment',
+            data: {'text_name': text_name, 'comment_text': newComment, 'line': linenum_global, 'is_pub': is_pub, },
+        });
+
+    }
+
+    function vocabToggle() {
+        if (vocab_on == 0) {
+            vocab_on = 1;
+            vocab_open = 0;
+            document.getElementById("vocab").style.color = '#700000';
+            $('.lat_word').addClass('special');
+            $(".lat_word").popover('enable');
+        }
+        else {
+            vocab_on = 0;
+            vocab_open = 0;
+            document.getElementById("vocab").style.color = '#006633';
+            $('.lat_word').removeClass('special');
+            $(".lat_word").popover('hide');
+            $(".lat_word").popover('disable');
+        }
+    }
 
 
 $(function ()  
 { 
-    $(".lat_word").popover({html:true, content:vocabLookup});  
-$(".lat_word").popover('disable'); 
+    $(".lat_word").popover({html:true, content:vocabLookup});
+
+    $(".lat_word").popover('disable'); 
 });
+
+
+      function closefunction(id) {
+        //id = $(this).attr('id');
+        var string = '#' + id;
+        $(string).popover('hide');
+        $(string).attr(id, "");
+        //$('.lat_word').popover('toggle');
+
+
+      }
 
         function vocabLookup(word) {
 
             if (vocab_on == 1) {
                 var william = '<iframe src="http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword='
-               /* var perseus = "http://www.perseus.tufts.edu/hopper/morph?l="
-                var my_url = perseus.concat(String($(this).attr('id')));
-                my_url = my_url.concat("&la=la")
-                '
+                word = $(this).data('word');
+                var id = "open" + String(vocab_open);
+                vocab_open = vocab_open + 1;
+                $(this).attr("id", id);
 
-            $('#testing1').load('http://www.archives.nd.edu/cgi-bin/wordz.pl?keyword=eum');*/
-            //william = william.concat(word)
-            var halfway = william.concat(String($(this).attr('id')));
+            var halfway = william.concat(word);
 
             var retVal = halfway.concat('"></iframe>');
 
-                return retVal;
+             close_func = "closefunction('" + id + "')";
+
+            var close_but = "<button onclick=" + close_func + ' type="button"  class="close">&times;</button> ';
+
+
+                return close_but + retVal;
 
         }
 
 
         }
+
+        function viewcommentary() {
+            $('#searchbook').modal({backdrop: "static", keyboard:false});
+        }
+
+$('#booksubmit').keypress( function( e ) {
+    
+  var code = e.keyCode || e.which;
+
+  if (e.keyCode == 13) {
+    e.preventDefault();
+    $('#searchme').click();
+    //return false; 
+  }
+})
+
+
+
+            function googlesearch(url) {
+            var search_text = document.getElementById("googleval").value
+
+            var xmlHttp = null;
+
+            xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", 'https://www.googleapis.com/books/v1/volumes?q=' + search_text, false );
+            xmlHttp.send( null );
+
+            var response = xmlHttp.responseText;
+
+            var jsonobj = $.parseJSON(response);
+
+            var stringy = "";
+
+            var results = document.getElementById("resultslist");
+
+            while(results.childNodes.length > 0) {
+            old_node = results.childNodes[0];
+            results.removeChild(old_node);
+        }
+
+        if (jsonobj.totalItems == 0) {
+            no_results(results);
+            return;
+        }
+
+            var length = jsonobj.items.length;
+
+            for (var i = 0; i < length; i++) {
+            if (jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_10" || jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_13") {
+                if (jsonobj.items[i].accessInfo.viewability != "NO_PAGES") {
+                    books_list(jsonobj.items[i], results, url);
+                }
+            }
+
+            }
+
+
+        function change_page(url) {
+            window.location.href = url;
+        }
+
+        function no_results(results) {
+            var newitem = document.createElement("li");
+            var no_result = document.createTextNode("No results");
+
+            newitem.appendChild(no_result);
+
+            results.appendChild(newitem);
+
+        }
+
+        function books_list(item, results, url) {
+            var newitem = document.createElement("li");
+            var title = document.createElement("span");
+            var containL = document.createElement("div")
+            var containR = document.createElement("div")
+            var thumbnail = document.createElement("img")
+            thumbnail.style.float = "left";
+
+            //contain.setAttribute("class", "booklist")
+
+            var listing = item.volumeInfo.title + '<br>';
+
+            var length = item.volumeInfo.authors.length;
+
+            for (var i = 0; i < length; i++) {
+                listing = listing + item.volumeInfo.authors[i] + '<br>';
+            }
+
+            listing = listing + item.volumeInfo.publishedDate + '<br>' + '<hr>';
+
+            var date = document.createTextNode(item.volumeInfo.publishedDate);
+            var author = document.createTextNode(item.volumeInfo.authors[0]);
+            var isbn = 'ISBN:' + item.volumeInfo.industryIdentifiers[0].identifier;
+
+            thumbnail.setAttribute("src",item.volumeInfo.imageLinks.smallThumbnail);
+            newitem.setAttribute("class", "clickdiv");
+            newitem.setAttribute("onclick", "window.location='" + url.replace('X1XXXXX', isbn) + "'");
+
+            title.innerHTML = listing;
+
+            containL.setAttribute("id", "clickdivThumb");
+            containR.setAttribute("id", "clickdivText");
+
+            containL.appendChild(thumbnail);
+            containR.appendChild(title);
+            
+            newitem.appendChild(containL);
+            newitem.appendChild(containR);
+            
+            results.appendChild(newitem);
+        }
+
+        }
+
+        // display modal for viewing user comments
+        function viewUserComments() {
+            $('#viewUserComm').modal({backdrop: 'static', keyboard:false});
+        }
+        
+        // javascript function to call view_comments view
+        function callViewComments() {
+            var csrftoken = getCookie('csrftoken');
+                
+            $.ajaxSetup({
+                crossDomain: false, // obviates need for sameOrigin test
+                beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+                }
+            });
+
+            // CHECK if public, private, or both requested  
+            // NB public-only = 1, private-only = 2, pub+priv = 3
+            var option;
+            if ($('#viewUserPub').is(':checked')) {
+                option = 1;
+            }
+            else if ($('#viewUserPriv').is(':checked')) {
+                option = 2;
+            }
+            else {
+                option = 3;
+            }
+
+
+            $.ajax({
+                type: 'POST',
+                url: './view_comments',
+                data: { 'comment_type' : option, }, // do I need to set 'text_name' here?
+                success: function (result) {
+                    window.location.replace("./view_comments");
+                },
+            });
+
+        } // end callViewComments()   
+
 
     </script>
+
   </body>
 </html>

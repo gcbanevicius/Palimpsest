@@ -4,6 +4,47 @@
 }
 
 .jumbotron, h1 {
+	padding: 0.5em 0.6em;
 	color: #006633;
 }
 
+
+h1 { 
+	position: fixed
+	bottom: 0px;
+   width: 100%;
+   text-shadow: 1px 0px 20px #E8E8E8;
+   font-size: 70px
+
+}
+
+p {
+	font-size: 30px
+
+}
+
+img {width:80%;
+	height: auto; } 
+
+.contacts {
+	width: 350px;
+	text-align: center;
+	color: white;
+	background-color: #787878;
+	height:100px;
+	margin:100px auto;
+	border-radius:25px;
+	}
+
+body {
+padding-top: 70px;
+height: 100%;
+width: 100%;
+background-clip: content-box;
+background: url(./zeus_fade.png) no-repeat center center fixed;
+background-size: cover;
+background-attachment: fixed;
+background-position: center center;
+text-align: center;
+	color: #E8E8E8;
+}
