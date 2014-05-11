@@ -30,7 +30,7 @@
           {% if user.is_authenticated %}
           <li><a href="{% url 'subscribers.views.signout' %}?next={{ request.get_full_path|urlencode }}">Logout</a></li>
           </ul>
-          <a class="navbar-brand" style="float: right; margin-right: 250px" href="#"> Hello {{user.username}}!</a>
+          <a class="navbar-brand" style="float: right" href="#"> Hello {{user.username}}!</a>
           {% else %}
           <li><a href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">Login</a></li>
           </ul>

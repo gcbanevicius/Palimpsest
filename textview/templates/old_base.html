@@ -25,12 +25,14 @@
   <body>
 
 {% include "navbar_base.html" %}
-    <div id="wrapper">
+
+   <div class="row">
+    <div class="col-md-2">
 
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
-                                <li id="tool-box"> <h5> Views </h5>
+        <li id="tool-box"> <h5> Views </h5>
 
                 <li>
                     <div class="col-md-8">
@@ -46,7 +48,6 @@
                     <div class="row">
                     <div class="col-md-4">
                     </div>
-                </li>
                 </li>
                 <li><a href="{% url 'index' text_name=text_id %}">View Plain Text</a>
                 </li>
@@ -83,14 +84,9 @@
             </ul>
         </div>
 
+   </div>
 
-  <div id="page-content-wrapper">
-<h2 style="text-align: center;"> {{author}} : &nbsp{{title}} </h2>
-  {% block content%}
-  {% endblock %}
-  </div><!-- /.col-md -->
-
-
+ <div class="container">
  
    <!-- Modal (only appears on click)-->
 <div class="modal fade" id="addComment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -200,7 +196,14 @@
 </div>
 
 <!-- end modals -->
+     
+  <div class="col-md-10">
+  {% block content%}
+  {% endblock %}
+  </div><!-- /.col-md -->
+</div><!-- /.row -->
 
+    </div> <!-- /container -->
 
 
     <!-- Bootstrap core JavaScript
@@ -266,24 +269,24 @@
         }
         }
 
-    // using jQuery
-    function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+	// using jQuery
+	function getCookie(name) {
+	var cookieValue = null;
+	if (document.cookie && document.cookie != '') {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) { 
-                var cookie = jQuery.trim(cookies[i]);
-                
+			    var cookie = jQuery.trim(cookies[i]);
+			    
                 // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-                
+			    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		            break;
+			    }
+			}
+		}
+		return cookieValue;
+	}
+			    
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -292,20 +295,20 @@
     function commentAdd() {         
         var newComment = document.getElementById("commentmodaltext").value;
         document.getElementById("commentmodaltext").value = '';
-    
+	
         var text_name = "{{text_id}}"
         var user_name = "{{user.username}}"
 
-        var csrftoken = getCookie('csrftoken');
-                
-        $.ajaxSetup({
-            crossDomain: false, // obviates need for sameOrigin test
+	    var csrftoken = getCookie('csrftoken');
+			    
+	    $.ajaxSetup({
+	        crossDomain: false, // obviates need for sameOrigin test
             beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
             }
-            }
-        });
+	    });
 
         // CHECK if it is public (or if ($('#private').is(':checked')) )
         // NB: must be 1 for TRUE, 0 for FALSE
@@ -316,13 +319,13 @@
             var is_pub = 0;
         }
 
-        $.ajax({
-            type: 'POST',
-            url: './add_comment',
-            data: {'text_name': text_name, 'comment_text': newComment, 'line': linenum_global, 'is_pub': is_pub, },
-        });
+	    $.ajax({
+		    type: 'POST',
+			url: './add_comment',
+			data: {'text_name': text_name, 'comment_text': newComment, 'line': linenum_global, 'is_pub': is_pub, },
+		});
 
-    }
+	}
 
     function vocabToggle() {
         if (vocab_on == 0) {
@@ -433,15 +436,13 @@ $('#booksubmit').keypress( function( e ) {
             var length = jsonobj.items.length;
 
             for (var i = 0; i < length; i++) {
-                if (jsonobj.items[i].volumeInfo.industryIdentifiers != undefined) {
             if (jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_10" || jsonobj.items[i].volumeInfo.industryIdentifiers[0].type == "ISBN_13") {
-                if (jsonobj.items[i].accessInfo.embeddable != false) {
+                if (jsonobj.items[i].accessInfo.viewability != "NO_PAGES") {
                     books_list(jsonobj.items[i], results, url);
                 }
             }
 
             }
-        }
 
 
         function change_page(url) {
@@ -509,16 +510,16 @@ $('#booksubmit').keypress( function( e ) {
         
         // javascript function to call view_comments view
         function callViewComments() {
-            var csrftoken = getCookie('csrftoken');
-                
-            $.ajaxSetup({
-                crossDomain: false, // obviates need for sameOrigin test
+    	    var csrftoken = getCookie('csrftoken');
+			    
+	        $.ajaxSetup({
+	            crossDomain: false, // obviates need for sameOrigin test
                 beforeSend: function(xhr, settings) {
                 if (!csrfSafeMethod(settings.type)) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			    }
                 }
-                }
-            });
+	        });
 
             // CHECK if public, private, or both requested  
             // NB public-only = 1, private-only = 2, pub+priv = 3
@@ -534,14 +535,14 @@ $('#booksubmit').keypress( function( e ) {
             }
 
 
-            $.ajax({
-                type: 'POST',
-                url: './view_comments',
-                data: { 'comment_type' : option, }, // do I need to set 'text_name' here?
+	        $.ajax({
+		        type: 'POST',
+			    url: './view_comments',
+			    data: { 'comment_type' : option, }, // do I need to set 'text_name' here?
                 success: function (result) {
                     window.location.replace("./view_comments");
                 },
-            });
+		    });
 
         } // end callViewComments()   
 

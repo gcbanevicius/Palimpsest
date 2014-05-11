@@ -25,8 +25,6 @@ def render_error(request, error_msg, text_name = ''):
         ('', '', 'A single book (e.g. 1)', '', ''),        
     ]
 
-    print text
-
     c = RequestContext (request, {
         'text_id': text_name,
         'text_lines': text,
@@ -70,9 +68,12 @@ def index(request, text_name=""):
     for i in text:
         newtext.append((i[0], i[2].split()))
 
+
     c = RequestContext (request, {
       'text_id': text_name,
       'text_lines': newtext,
+      'title' : get_title(text_name),
+      'author': get_author(text_name)
       #'error_mode': request.session['error_mode'] # pass in "error_mode", so we can choose correct layout
      })
 
@@ -98,7 +99,6 @@ def two_text(request, text_name=""):
             return render_error(request, ('', '', 'Welcome to Palimpsest!', '', ''), text_name)
 
         # now need second to last field, because of comment field
-        print text_left[0], text_left[-1]
         text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
 
     elif request.method == 'POST':
@@ -114,7 +114,6 @@ def two_text(request, text_name=""):
             if error != 0: 
                 return render_error(request, text_left[0], text_name) 
 
-            print text_left[0], text_left[-1]
             text_right = queryEng.startQuery(text_left[0][-2], text_left[-1][-2])
 
         # if it was an invalid form, print suggestion message
@@ -129,6 +128,8 @@ def two_text(request, text_name=""):
       'text_id': text_name,
       'text_left': newleft, 
       'text_right': text_right,
+      'title' : get_title(text_name),
+      'author': get_author(text_name)
      })
 
     return HttpResponse(temp.render(c))
@@ -159,14 +160,13 @@ def add_comment(request, text_name=""):
             comment.save()
             #query.insertComment(request.POST['line'], request.POST['comment_text'])
 
-        # this else is a dummy clause, remove later
-        else:
-            print "Not AJAX, I suppose..."
 
         c = RequestContext(request, {
           'text_id': text_name,
           'text_left': '',#Text.objects.all(), 
           'text_right': '',#Text.objects.all()
+          'title' : get_title(text_name),
+          'author': get_author(text_name)
           })
         
         #print "print the user id!"
@@ -234,6 +234,8 @@ def view_comments(request, text_name=""):
             'text_id': text_name,
             'text_left': newleft, 
             'text_right': text_right,
+            'title' : get_title(text_name),
+            'author': get_author(text_name)
         })
 
         return HttpResponse(temp.render(c))
@@ -258,7 +260,6 @@ def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
 
         ###  BEGIN get Latin text  ###
         if request.method == 'POST':
-            print 'Post it!'
             form = QueryForm(request.POST)
             if form.is_valid():
                 q_range = str(form.cleaned_data['range'])
@@ -271,7 +272,6 @@ def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
                     request.session['query_range'] = q_range
 
         elif request.method == 'GET':
-            print 'Get it!'
             if 'query_range' in request.session:
                 q_range = request.session['query_range']
             else:
@@ -292,10 +292,20 @@ def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
             'text_id': text_name,
             'text_left': newleft,
             'isbn': isbn_num, 
+            'title' : get_title(text_name),
+            'author': get_author(text_name)
         })
 
         return HttpResponse(temp.render(c))
     else:
         return HttpResponseRedirect('/subscribers/signin')
+
+def get_author(text_name):
+    if (text_name == "aeneid"): return "Virgil"
+
+
+def get_title(text_name):
+    if (text_name == "aeneid"): return "The Aeneid"
+    
 
 
