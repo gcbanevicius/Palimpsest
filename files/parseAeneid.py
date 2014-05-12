@@ -49,7 +49,7 @@ def parseText(fileName):
             path = str(b_idx)+'.'+str(l_idx)
             text = l[0]
             data = (path, line_num, l[0], l[1], 'aeneid')
-            #curs.execute("""INSERT INTO aen_lat VALUES (%s, %s, %s, %s, %s);""", data) # % (path, text))
+            #curs.execute("""INSERT INTO latin VALUES (%s, %s, %s, %s, %s);""", data) # % (path, text))
 
 # let's see if we can get our data back...
     curs.execute("""SELECT * FROM aen_lat WHERE path <@ '2.7' """)

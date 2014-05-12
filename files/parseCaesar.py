@@ -8,28 +8,35 @@ def parseText(fileName):
     root = tree.getroot()
 
     books_raw = root.findall('text/body/div1')
-    
+
     books = []
-    card_idx = 0
+    book_idx = 0
+    chap_idx = 0
+    sect_idx = 0
     for book_raw in books_raw:
-        lines = book_raw.findall('*')
+        book_idx += 1
+        chap_idx = 0
+        tags = book_raw.findall('*')
         book = []
-    #card = []
-        for line in lines:
-            if line.find('milestone') is not None or line.tag == 'milestone':
-                card_idx += 1
-            if line.text:  #line.tag == "l":
-            #print line.text
-            #card.append(line)
-                book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
-            #book.append(line)
-        #elif len(card) > 0:
-        #    book.append(card)
-        #    card = []
+        for tag in tags:
+            if tag.tag == 'head':
+                pass
+            elif tag.tag == 'p': # assuming it's a <head> or a <p>
+                chap_idx += 1 # new <p> tag means new chapter
+                lines = tag.itertext()
+                for line in lines:
+                    sect_idx += 1
+                    #print line, "!?!?"
+                    #book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
+                    idx = str(book_idx) + '.' + str(chap_idx) + '.' + str(sect_idx)
+                    book.append( (line, idx) )
+            # a bit extreme...
+            else:
+                exit(1)
         books.append(book)
     
-#print book[1]
-#print book[1][1]
+    print books[0]
+    print books[1][1]
     import psycopg2
     try:
         conn = psycopg2.connect("dbname='simple_ltree' user='gbanevic' host='localhost' password='password'")
@@ -48,12 +55,13 @@ def parseText(fileName):
             line_num += 1
             path = str(b_idx)+'.'+str(l_idx)
             text = l[0]
-            data = (path, line_num, l[0], l[1], 'aeneid')
-            #curs.execute("""INSERT INTO aen_lat VALUES (%s, %s, %s, %s, %s);""", data) # % (path, text))
+            data = (path, line_num, l[0], l[1], 'gallic_war')
+            print data
+            #curs.execute("""INSERT INTO latin VALUES (%s, %s, %s, %s, %s);""", data) # % (path, text))
 
 # let's see if we can get our data back...
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ '2.7' """)
-    rows = curs.fetchall()
+    #curs.execute("""SELECT * FROM aen_lat WHERE path <@ '2.7' """)
+    #rows = curs.fetchall()
 #print rows
     for row in rows:
         if row[1]:

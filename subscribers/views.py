@@ -56,6 +56,7 @@ def signout(request):
 def signup(request):
     c = {}
     c.update(csrf(request))
+    request.session['curr_page'] = urllib2.unquote(request.GET.get('next'))
     return render_to_response('subscribers/signup.html', c)    
 
 def signup_success(request):
@@ -73,9 +74,4 @@ def signup_success(request):
         
             User.objects.create_user(un, em, pw, first_name=fn, last_name=ln)
 
-            if 'curr_page' in request.session:
-                print request.session['curr_page'], "!?!"
-                return render(request, request.session['curr_page'])
-            else:
-                print 'No session var for last page...'
-                return render(request, 'homepage.html')
+            return HttpResponseRedirect(request.session['curr_page'])

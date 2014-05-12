@@ -41,8 +41,8 @@ def db_connect():
         print 'Unexpected error:', sys.exc_info()
     
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
@@ -52,11 +52,15 @@ def db_connect():
     return curs
 
 
-def book(bk_start):
+def book(bk_start, text_name):
     curs = db_connect()
-    query = (str(bk_start), )
+    table = text_name + '_lat'
+    print table
+    query = (table, str(bk_start))
+    query = (table, )
     try:
-        curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+        #curs.execute("""SELECT * FROM aeneid_lat WHERE path <@ %s ORDER BY line_num;""", query)
+        curs.execute("""SELECT * FROM aeneid_lat;""", ('aeneid_lat', )) # WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
@@ -64,11 +68,11 @@ def book(bk_start):
     #print lines
     return (lines, 0)
 
-def line(ln_start):
+def line(ln_start, text_name):
     curs = db_connect()
     query = (str(ln_start), )
     try:
-        curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
@@ -76,7 +80,7 @@ def line(ln_start):
     #print line
     return (line, 0)
 
-def lineToLine(start, end):
+def lineToLine(start, end, text_name):
     curs = db_connect()
     
     bk_start = int(start.split('.')[0])
@@ -98,7 +102,7 @@ def lineToLine(start, end):
     # get the first book
     query = (str(bk_start), )
     try:
-        curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
@@ -118,7 +122,7 @@ def lineToLine(start, end):
         for i in range(bk_start+1, bk_end):
             query = (str(i), )
             try:
-                curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+                curs.execute("""SELECT * FROM latin WHERE path <@ %s ORDER BY line_num;""", query)
             except:
                 rspStr = 'Please input a valid query!'
                 return ( [('', '', rspStr, '', '')], -1 )
@@ -128,7 +132,7 @@ def lineToLine(start, end):
     # now get the last book
     query = (str(bk_end), )
     try:
-        curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
@@ -137,7 +141,7 @@ def lineToLine(start, end):
     #print lines
     return (lines, 0)
 
-def bookToBook(start, end):
+def bookToBook(start, end, text_name):
     curs = db_connect()
     
     bk_start = int(start) #int(start.split('.')[0])
@@ -160,7 +164,7 @@ def bookToBook(start, end):
     # get the first book
     query = (str(bk_start), )
     try:
-        curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
@@ -176,7 +180,7 @@ def bookToBook(start, end):
         for i in range(bk_start+1, bk_end):
             query = (str(i), )
             try:
-                curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+                curs.execute("""SELECT * FROM latin WHERE path <@ %s ORDER BY line_num;""", query)
             except:
                 rspStr = 'Please input a valid query!'
                 return ( [('', '', rspStr, '', '')], -1 )
@@ -185,7 +189,7 @@ def bookToBook(start, end):
     # now get the last book
     query = (str(bk_end), )
     try:
-        curs.execute("""SELECT * FROM aen_lat WHERE path <@ %s ORDER BY line_num;""", query)
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s ORDER BY line_num;""", query)
     except:
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
@@ -195,7 +199,7 @@ def bookToBook(start, end):
     #print lines
     return (lines, 0)
 
-def startQuery(queryStr):
+def startQuery(queryStr, text_name):
     print '-', queryStr, '-'
 
     # should not occur
@@ -214,10 +218,10 @@ def startQuery(queryStr):
 
     elif q_len == 2:
         if re.match(r'^\s*\d+\s*\d+\s*$', query):
-            q_result = bookToBook(q_list[0], q_list[1])
+            q_result = bookToBook(q_list[0], q_list[1], text_name)
 
         elif re.match(r'^\s*\d+\.\d+\s*\d+\.\d+\s*$', query):
-            q_result = lineToLine(q_list[0], q_list[1])
+            q_result = lineToLine(q_list[0], q_list[1], text_name)
         
         elif re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query):
             rspStr = 'Invalid query: cannot give book as start and specific line as end.'
@@ -235,11 +239,11 @@ def startQuery(queryStr):
         if re.match(r'^\s*\d+\s*$', query):
             match = re.match(r'^\s*\d+\s*$', query)
             print 'book'
-            q_result = book(match.group())
+            q_result = book(match.group(), text_name)
 
         elif re.match(r'^\s*\d+\.\d+\s*$', query):
             match = re.match(r'^\s*\d+\.\d+\s*$', query)
-            q_result = line(match.group())
+            q_result = line(match.group(), text_name)
         
         else:
             print 'no match...'
@@ -296,14 +300,14 @@ def insertComment(lineNum, commentText):
  
 
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
 
     data = (commentText, lineNum)
-    curs.execute("""UPDATE aen_lat SET comment = %s WHERE path~%s;""", data)    
+    curs.execute("""UPDATE latin SET comment = %s WHERE path~%s;""", data)    
 
     conn.commit()
     if conn:
@@ -314,7 +318,7 @@ def main():
         print "Please input a single query or query range"
         
     else:
-        return startQuery(sys.argv[1])    
+        return startQuery(sys.argv[1], 'aeneid')    
 
 if __name__ == "__main__":
     main()

@@ -41,7 +41,7 @@ def index(request, text_name=""):
         # if we already asked for a range
         if 'query_range' in request.session:
             q_range = request.session['query_range']
-            text = query.startQuery(q_range)
+            text = query.startQuery(q_range, text_name)
             error = text[1] # error from query.py
             text = text[0] # actual list of text-tuples
             if error != 0:
@@ -54,7 +54,7 @@ def index(request, text_name=""):
         form = QueryForm(request.POST)
         if form.is_valid():            
             q_range = str(form.cleaned_data['range'])
-            text = query.startQuery(q_range)
+            text = query.startQuery(q_range, text_name)
             error = text[1] # error from query.py
             text = text[0] # actual list of text-tuples
             if error != 0:
@@ -88,7 +88,7 @@ def two_text(request, text_name=""):
         # if we already asked for a range
         if 'query_range' in request.session:
             q_range = request.session['query_range']
-            text_left = query.startQuery(q_range)
+            text_left = query.startQuery(q_range, text_name)
             error = text_left[1] # error from query.py
             text_left = text_left[0] # actual list of text-tuples
             if error != 0:
@@ -106,7 +106,7 @@ def two_text(request, text_name=""):
         if form.is_valid():
             q_range = str(form.cleaned_data['range'])
             request.session['query_range'] = q_range
-            text_left = query.startQuery(q_range)
+            text_left = query.startQuery(q_range, text_name)
             error = text_left[1] # error from query.py
             text_left = text_left[0] # actual list of text-tuples
            
@@ -205,7 +205,7 @@ def view_comments(request, text_name=""):
             else:
                 return render_error(request, ('', '', '', '', ''), text_name)
     
-        text_left = query.startQuery(q_range)
+        text_left = query.startQuery(q_range, text_name)
         error = text_left[1] # error from query.py
         text_left = text_left[0] # actual list of text-tuples
 
@@ -278,7 +278,7 @@ def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
                 q_range = '1'
                 request.session['query_range'] = q_range
     
-        text_left = query.startQuery(q_range)
+        text_left = query.startQuery(q_range, text_name)
         error = text_left[1] # error from query.py
         text_left = text_left[0] # actual list of text-tuples
  
