@@ -11,5 +11,5 @@ urlpatterns = patterns('',
     url(r'^login_error$', views.login_error, name='login_error'),
     url(r'^signup$', views.signup, name='signup'),
     url(r'^signup_success/$', views.signup_success, name='signup_success'),                        
-
+    url(r'^(?P<user_name>.+)/$', views.profile, name='profile'),
 )
