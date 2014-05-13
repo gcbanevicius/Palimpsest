@@ -1,0 +1,320 @@
+#!/usr/bin/python
+
+import sys, re, os
+import psycopg2
+import urlparse
+
+def db_connect():
+
+# Register database schemes in URLs.
+    urlparse.uses_netloc.append('postgres')
+    urlparse.uses_netloc.append('mysql')
+
+    try:
+        if 'DATBASES' not in locals():
+            DATABASES = {}
+
+        if 'DATABASE_URL' in os.environ:
+            print os.environ['DATABASE_URL']
+            url = urlparse.urlparse(os.environ['DATABASE_URL'])
+
+            # Ensure default database exists.
+            DATABASES['default'] = DATABASES.get('default', {})
+
+            # Update with environment configuration.
+            DATABASES['default'].update({
+                'NAME': url.path[1:],
+                'USER': url.username,
+                'PASSWORD': url.password,
+                'HOST': url.hostname,
+                'PORT': url.port, 
+                })
+            if url.scheme == 'postgres':
+                DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+
+            if url.scheme == 'mysql':
+                DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+
+            print DATABASES['default']
+
+    except Exception:
+        print 'Unexpected error:', sys.exc_info()
+    
+    try:
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+    except:
+        print "Could not connect to database"
+    curs = conn.cursor()
+
+    #if conn:
+    #    conn.close()
+    return curs
+
+
+def book(bk_start, text_name):
+    curs = db_connect()
+    query = (str(bk_start), text_name)
+    try:
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+    except:
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+    lines = curs.fetchall()
+    #print lines
+    return (lines, 0)
+
+def line(ln_start, text_name):
+    curs = db_connect()
+    query = (str(ln_start), text_name)
+    try:
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+    except:
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+    line = curs.fetchall()
+    #print line
+    return (line, 0)
+
+def lineToLine(start, end, text_name):
+    curs = db_connect()
+    
+    bk_start = int(start.split('.')[0])
+    bk_end = int(end.split('.')[0])
+
+    ln_start = int(start.split('.')[1])
+    ln_end = int(end.split('.')[1])
+
+    if int(bk_start) > int(bk_end):
+        print "Starting position is greater than ending position"
+        rspStr = 'Invalid query: starting position greater than ending position.'
+        return ( [('', '', rspStr, '', '')], -1 )
+
+    #print "Book range:", bk_start, bk_end
+    #print "Linerange:", ln_start, ln_end
+
+    lines = []
+
+    # get the first book
+    query = (str(bk_start), text_name)
+    try:
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+    except:
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+    lines.extend(curs.fetchall())
+    
+    # if the lines only span one book
+    if bk_start == bk_end:
+        lines = lines[ln_start-1 : ln_end]
+        #print lines
+        return (lines, 0)
+
+    else:
+        lines = lines[ln_start-1 : ]
+
+    # if there's at least one full book between them
+    if bk_end - bk_start > 1:
+        for i in range(bk_start+1, bk_end):
+            query = (str(i), text_name)
+            try:
+                curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+            except:
+                rspStr = 'Please input a valid query!'
+                return ( [('', '', rspStr, '', '')], -1 )
+ 
+            lines.extend(curs.fetchall())
+            
+    # now get the last book
+    query = (str(bk_end), text_name)
+    try:
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+    except:
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+    lines.extend(curs.fetchall()[:ln_end])
+    
+    #print lines
+    return (lines, 0)
+
+def bookToBook(start, end, text_name):
+    curs = db_connect()
+    
+    bk_start = int(start) #int(start.split('.')[0])
+    bk_end = int(end) #int(end.split('.')[0])
+
+    #ln_start = int(start.split('.')[1])
+    #ln_end = int(end.split('.')[1])
+
+    # equality OK; strange to query one book as a range, but acceptable
+    if int(bk_start) > int(bk_end):
+        print "Starting position is greater than ending position"
+        rspStr = 'Invalid query: starting position greater than ending position.'
+        return ( [('', '', rspStr, '', '')], -1 )
+
+    #print "Book range:", bk_start, bk_end
+    #print "Linerange:", ln_start, ln_end
+
+    lines = []
+
+    # get the first book
+    query = (str(bk_start), text_name)
+    try:
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+    except:
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+    lines.extend(curs.fetchall())
+    
+    # if the lines only span one book
+    if bk_start == bk_end:
+        #print lines
+        return (lines, 0) 
+
+    # if there's at least one full book between them
+    elif bk_end - bk_start > 1:
+        for i in range(bk_start+1, bk_end):
+            query = (str(i), text_name)
+            try:
+                curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+            except:
+                rspStr = 'Please input a valid query!'
+                return ( [('', '', rspStr, '', '')], -1 )
+            lines.extend(curs.fetchall())
+            
+    # now get the last book
+    query = (str(bk_end), text_name)
+    try:
+        curs.execute("""SELECT * FROM latin WHERE path <@ %s AND text_name = %s ORDER BY line_num;""", query)
+    except:
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+            
+    lines.extend(curs.fetchall())
+    
+    #print lines
+    return (lines, 0)
+
+def startQuery(queryStr, text_name):
+    print '-', queryStr, '-'
+
+    # should not occur
+    if not queryStr:
+        print "Please input a single query or query range"
+
+
+    query = queryStr.replace('-', ' ')
+    q_list = query.split() # no options will do any whitespace
+    print q_list
+    q_len = len(query.split())
+
+    if q_len > 2:
+        rspStr = 'Please limit query to single index or range of two.'
+        return ( [('', '', rspStr, '', '')], -1 )
+
+    elif q_len == 2:
+        if re.match(r'^\s*\d+\s*\d+\s*$', query):
+            q_result = bookToBook(q_list[0], q_list[1], text_name)
+
+        elif re.match(r'^\s*\d+\.\d+\s*\d+\.\d+\s*$', query):
+            q_result = lineToLine(q_list[0], q_list[1], text_name)
+        
+        elif re.match(r'^\s*\d+\s*\d+\.\d+\s*$', query):
+            rspStr = 'Invalid query: cannot give book as start and specific line as end.'
+            return ( [('', '', rspStr, '', '')], -1 )
+
+        elif re.match(r'^\s*\d+\.\d+\s*\d+\s*$', query):
+            rspStr = 'Invalid query: cannot give specific line as start and book as end.'
+            return ( [('', '', rspStr, '', '')], -1 )
+
+        else:
+            rspStr = 'Please input a valid query!'
+            return ( [('', '', rspStr, '', '')], -1 )
+
+    elif q_len == 1:
+        if re.match(r'^\s*\d+\s*$', query):
+            match = re.match(r'^\s*\d+\s*$', query)
+            print 'book'
+            q_result = book(match.group(), text_name)
+
+        elif re.match(r'^\s*\d+\.\d+\s*$', query):
+            match = re.match(r'^\s*\d+\.\d+\s*$', query)
+            q_result = line(match.group(), text_name)
+        
+        else:
+            print 'no match...'
+            rspStr = 'Please input a valid query!'
+            return ( [('', '', rspStr, '', '')], -1 )
+
+    else:
+        print "Should not be here." 
+        rspStr = 'Please input a valid query!'
+        return ( [('', '', rspStr, '', '')], -1 )
+
+    if not q_result[0]:
+        print 'Null result!'
+        rspStr = """Query returned no text, despite valid syntax.\n
+                  Are you sure the lines you want... exist?"""
+        return ( [('', '', rspStr, '', '')], -1 )
+
+
+    return q_result
+
+def insertComment(lineNum, commentText):
+    urlparse.uses_netloc.append('postgres')
+    urlparse.uses_netloc.append('mysql')
+
+    try:
+        if 'DATBASES' not in locals():
+            DATABASES = {}
+
+        if 'DATABASE_URL' in os.environ:
+            print os.environ['DATABASE_URL']
+            url = urlparse.urlparse(os.environ['DATABASE_URL'])
+
+            # Ensure default database exists.
+            DATABASES['default'] = DATABASES.get('default', {})
+
+            # Update with environment configuration.
+            DATABASES['default'].update({
+                'NAME': url.path[1:],
+                'USER': url.username,
+                'PASSWORD': url.password,
+                'HOST': url.hostname,
+                'PORT': url.port, 
+                })
+            if url.scheme == 'postgres':
+                DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+
+            if url.scheme == 'mysql':
+                DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+
+            print DATABASES['default']
+
+    except Exception:
+        print 'Unexpected error:', sys.exc_info()
+ 
+
+    try:
+        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+    except:
+        print "Could not connect to database"
+    curs = conn.cursor()
+
+    data = (commentText, lineNum)
+    curs.execute("""UPDATE latin SET comment = %s WHERE path~%s;""", data)    
+
+    conn.commit()
+    if conn:
+        conn.close()
+
+def main():
+    if len(sys.argv) < 2:
+        print "Please input a single query or query range"
+        
+    else:
+        return startQuery(sys.argv[1], 'aeneid')    
+
+if __name__ == "__main__":
+    main()

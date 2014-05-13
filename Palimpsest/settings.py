@@ -90,6 +90,7 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = '/'
 
+
 SOCIAL_AUTH_FACEBOOK_KEY = '140205772850490'
 SOCIAL_AUTH_FACEBOOK_SECRET = 'eb300ece5a73732d34624e5978ca8a7d'
 
@@ -122,15 +123,15 @@ DATABASES = {'default': dj_database_url.config() }#, 'ENGINE': 'django.db.backen
 #    }
 #}
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'simple_ltree', #'simple_postgres',
-        'USER': 'nik1tako',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',
-    }
-}
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'simple_ltree', #'simple_postgres',
+#        'USER': 'nik1tako',
+#        'PASSWORD': 'password',
+#        'HOST': 'localhost',
+#    }
+#}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

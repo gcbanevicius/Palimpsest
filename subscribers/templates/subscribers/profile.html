@@ -2,21 +2,85 @@
 {% extends "lbase.html" %}
 
 {% block content %}
-
+      {% if user.is_authenticated %}
       <div class="row">
           <div class="col-md-12">
+            <div class="prof">
               <h1 align="center"> User Profile for {{usersname.username}}</h1>
+            </div>
           </div>
       </div>
+              <div class="contacts">
       <div class="row">
-          <ul>
-              <p> First Name: {{usersname.first_name}} </p>
-              <p> Last Name: {{usersname.last_name}} </p>
-              <p> Last Login: {{usersname.last_login}} </p>              
-              <p> Date Joined: {{usersname.date_joined}} </p>                                                        
-          </ul>
-      </div>
 
+
+              <div class="col-md-4">
+              <ul>
+              <p> <strong>First Name:</strong> </p>
+              <p> <strong>Last Name:</strong>  </p>
+              <p> <strong>Last Login:</strong> </p>              
+              <p> <strong>Date Joined:</strong>  </p>   
+              </ul>
+              </div>
+              <div class="col-md-8">
+              <p>  {{usersname.first_name}} </p>
+              <p>  {{usersname.last_name}} </p>
+              <p>  {{usersname.last_login}} </p>              
+              <p>  {{usersname.date_joined}} </p> 
+              </div>
+              </div>
+            </div>
+      <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10"
+            <ul>
+              <p> <strong> Public comments: </strong> </p> 
+              {% if not user_comments %}
+              {{usersname.username}} hasn't posted any public comments.
+              {% endif %}    
+              {% for i in user_comments %}
+              {% if i.public == True and i.anonymous == False %}
+              <p> {{ i.text_name }} : {{ i.book }}.{{ i.line }} &nbsp &nbsp {{ i.comment_text }} </p>   
+              {% endif %}
+              {% endfor %}
+              <br>
+              {%if usersname.username == user.username %}
+              <p> <strong> Private comments: </strong> </p>  
+              {% for i in user_comments %}
+              {% if i.public == False and i.anonymous == False %}
+               <p> {{ i.text_name }} : {{ i.book }}.{{ i.line }} &nbsp &nbsp {{ i.comment_text }} </p>   
+              {% endif %}
+              {% endfor %}
+              <br> 
+              <p> <strong> Anonymous comments: </strong></p>                  
+              {% for i in user_comments %}
+              {% if i.public == True and i.anonymous == True %}
+               <p> {{ i.text_name }} : {{ i.book }}.{{ i.line }} &nbsp &nbsp{{ i.comment_text }} </p>
+              {% endif %}
+              {% endfor %}              
+              {% endif %}  
+            <br>
+            <br>
+            <a href="{% url 'index' %}"> <strong>See all profiles.</strong> </a>
+            </ul>       
+            </div>                                
+      </div>
+      </div>
+      {% else %}
+      <script type="text/javascript">
+          $(window).load(function(){
+              $('#signin').modal('show');
+          });
+      </script>
+      <div class="row">
+          <div class="col-md-12">
+            <div class="prof">
+              <h1 align="center"> You must log in to view user profiles. </h1>
+            </div>
+          </div>
+      </div>
+      {% endif %}
   </body>
 </html>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+<!-- <div class="col-md-3"></div> -->
+<div class="col-md-2"></div>
+
+<div class="col-md-9">
+    {% for i in text_lines%}
+        <span id='{{i.0}}' class="linenumber" onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp 
+	    {% for word in i.1 %}
+		    <span class="lat_word" data-word="{{word}}"> {{word}} </span>
+	    {% endfor %}
+ 	    <br>
+    {% endfor %}
+</div>
+
+</div> <!-- /row -->
+
+{% endblock %}
+
+{#% if error_mode == 1 %}
+    <p>{{ text_lines.0.1 }}</p>
+    <br>
+    <p>{{ text_lines.1.1 }}</p>
+    <ul style="list-style-type:none">
+    {% for line in text_lines|slice:"2:" %}
+        <li>{{ line.1 }}</li>
+    {% endfor %}
+    </ul>
+{% else %#}
+

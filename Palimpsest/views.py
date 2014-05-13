@@ -9,7 +9,7 @@ def home(request):
 	 return render(request, 'homepage.html')
 
 def about(request):
-	 return HttpResponse(render_to_response('about.html'))
+	 return render(request, 'about.html')
 
 def contact(request):
-	 return HttpResponse(render_to_response('contact.html'))
+	 	 return render(request, 'contact.html')

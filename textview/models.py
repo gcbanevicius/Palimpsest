@@ -17,3 +17,4 @@ class Comment(models.Model):
     user_id = models.IntegerField()
     text_name = models.CharField(max_length=255)
     comment_text = models.TextField()
+    anonymous = models.BooleanField()

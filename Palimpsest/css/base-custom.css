@@ -5,13 +5,12 @@
   text-decoration: none;
 }
 
-#sidebar-wrapper {
-  background: #E8E8E8;
-  height: 100%; //420px;
-  margin-top: -20px;
-  width: 190px;
-}
 
+
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
 
 .sidebar-nav {
   width: 100%;
@@ -95,8 +94,10 @@ body {
 
 .commentary{
   position: fixed;
-  top: 75px;
+  top: 135px;
   bottom: 50px;
   right: 50px;
 }
+
+
  

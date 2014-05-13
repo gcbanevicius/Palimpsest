@@ -5,13 +5,15 @@
 
 #sidebar-wrapper {
   margin-left: -250px;
+  margin-top: -20px;
   left: 250px;
-  width: 250px;
-  background: #000;
+  width: 190px;
+  background: #E8E8E8;
   position: fixed;
   height: 100%;
   z-index: 1000;
   transition: all 0.4s ease 0s;
+  overflow-y: auto;
 }
 
 #page-content-wrapper {

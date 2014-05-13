@@ -40,8 +40,8 @@ def db_connect():
         print 'Unexpected error:', sys.exc_info()
     
     try:
-        conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
-        #conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
+        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
@@ -51,13 +51,13 @@ def db_connect():
     return curs
 
 
-def startQuery(card_start, card_end):
+def startQuery(card_start, card_end, text_name):
     print 'Starting, ending cards:', card_start, card_end
 
     curs = db_connect()
-    query = (card_start, card_end)
+    query = (card_start, card_end, text_name)
     try:
-        curs.execute("""SELECT * FROM aen_eng WHERE card >= %s AND card <= %s ORDER BY line_num;""", query)
+        curs.execute("""SELECT * FROM english WHERE card >= %s AND card <= %s AND text_name = %s ORDER BY line_num;""", query)
     except:
         return [('', '', 'No English lines returned...', '')]
     lines = curs.fetchall()
@@ -67,7 +67,7 @@ def startQuery(card_start, card_end):
 def main():
     sys.argv[1] = card_start
     sys.argv[2] = card_end
-    startQuery(card_start, card_end)
+    startQuery(card_start, card_end, 'aeneid')
 
 if __name__ == '__main__':
     main()

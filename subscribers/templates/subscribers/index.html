@@ -2,19 +2,37 @@
 {% extends "lbase.html" %}
 
 {% block content %}
-
+      {% if user.is_authenticated %}
       <div class="row">
           <div class="col-md-12">
+            <div class="prof">
               <h1 align="center">Salvete Classicists!</h1>
+            </div>
           </div>
       </div>
+    <div class="contacts">
       <div class="row">
           <ul>
           {% for userss in usersname %}
-              <li> <a href="{% url 'profile' userss.username %}"> {{ userss.username}} </a></li>
+              <li>  <a href="{% url 'profile' userss.username %}" style="color: #FFFFFF; font-size: 16px"> {{ userss.username}} </a></li>
           {% endfor %}
           </ul>    
       </div>
+      {% else %}
+      <script type="text/javascript">
+          $(window).load(function(){
+              $('#signin').modal('show');
+          });
+      </script>
+      <div class="row">
+          <div class="col-md-12">
+            <div class="prof">
+              <h1 align="center"> You must log in to view user profiles. </h1>
+            </div>
+          </div>
+      </div>      
+      {% endif %}
+    </div>
 
   </body>
 </html>

@@ -22,3 +22,8 @@ color: #E8E8E8
     text-align:center!important;
     width: 100%;
 }
+
+.dropdown-menu {
+  text-align: left;
+}
+

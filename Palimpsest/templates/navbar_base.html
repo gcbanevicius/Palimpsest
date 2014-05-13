@@ -16,9 +16,10 @@
             <li><a href="{% url 'about' %}">About</a></li>
             <li><a href="{% url 'contact' %}">Contact</a></li>
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Texts<b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Texts <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="{% url 'index' 'aeneid' %}">Vergil's Aeneid</a></li>
+                  <li><a href="{% url 'index' 'aeneid' %}">Vergil's <em>Aeneid</em></a></li>
+                  <li><a href="{% url 'index' 'gallic_war' %}">Caesar's <em>Gallic Wars</em></a></li>
                   <!--li><a href="#">Another action</a></li>
                   <li><a href="#">Something else here</a></li>
                   <li class="divider"></li>
@@ -29,15 +30,78 @@
               </li>
               <li><a href="{% url 'subscribers.views.index' %}">Classicists Unite!</a></li>
           {% if user.is_authenticated %}
-          <li><a href="{% url 'subscribers.views.signout' %}?next={{ request.get_full_path|urlencode }}">Logout</a></li>
+          <li><a href="{% url 'subscribers.views.signout' %}?next=/">Logout</a></li>
           </ul>
-          <a class="navbar-brand" style="float: right" href="#"> Hello {{user.username}}!</a>
+          <a class="navbar-brand" style="float: right" href="{% url 'profile' user.username %}"> Hello {{user.username}}!</a>
           {% else %}
-          <li><a href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}">Login</a></li>
+          <li><a data-toggle="modal" href="#signin">Login</a></li>
           </ul>
-          <a class="navbar-brand" style="float:right" href="{% url 'subscribers.views.signup' %}"> Sign up!</a>
+          <a class="navbar-brand" style="float:right" data-toggle="modal" href="#signup"> Sign up!</a>
           {% endif %}
           </div>
         </div><!--/.nav-collapse -->
       </div>
     </div>
+
+
+<div class="modal fade" id="signin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Select Login Method</h4>
+      </div>
+      <div class="modal-body">
+
+      <div class="row">
+          <div class="col-md-6">
+            <div class="signin-banner">
+              <a href="{% url 'subscribers.views.signin' %}?next={{ request.get_full_path|urlencode }}"> <img src="/static/palimpsestid.png" alt="palimpsestid" width="200px"></a>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+              <div class="signin-banner" style="padding-top: 20px">
+              <a href="{% url 'social:begin' 'facebook' %}?next={{ request.get_full_path|urlencode }}"> <img valign="middle" src="/static/fb.jpg" alt="facebook" width="200px"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="signup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Select Signup Method</h4>
+      </div>
+      <div class="modal-body">
+
+      <div class="row">
+          <div class="col-md-6">
+            <div class="signin-banner">
+              <a href="{% url 'subscribers.views.signup' %}?next={{ request.get_full_path|urlencode }}"> <img src="/static/palimpsestid.png" alt="palimpsestid" width="200px"></a>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+              <div class="signin-banner" style="padding-top: 20px">
+              <a href="{% url 'social:begin' 'facebook' %}?next={{ request.get_full_path|urlencode }}"> <img valign="middle" src="/static/fb.jpg" alt="facebook" width="200px"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+

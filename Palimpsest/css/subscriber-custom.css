@@ -1,0 +1,117 @@
+
+.sidebar-nav li a {
+  color: #006633;
+  display: block;
+  text-decoration: none;
+}
+
+
+
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.sidebar-nav {
+  width: 100%;
+}
+
+.prof > h1{
+ text-shadow: 1px 0px 20px #336600; 
+}
+
+.sidebar-nav > .sidebar-brand {
+  color: #006633;
+}
+
+.sidebar-nav li span {
+  color: #E8E8E8;
+  background: #006633;
+}
+
+.sidebar-nav li h5 {
+  box-sizing: content-box;
+  color: #E8E8E8;
+  background: #006633;
+  font-size: 20px;
+  margin-top: 0px;
+}
+
+.input-group .form-control {
+float: left;
+width: 170px;
+;
+}
+
+.special:hover {
+  color: #700000;
+  cursor:pointer;
+}
+
+.handhover:hover {
+  cursor:pointer;
+}
+
+input[type="button"], input[type="submit"], input[type="reset"], input[type="file"]::-webkit-file-upload-button, button {
+align-items: flex-start;
+color: #006633;
+}
+
+.popover {
+    max-width: 350px;
+    width: auto;
+}
+
+.bookview li div {
+  
+}
+
+.bookview li div:hover {
+  background-color: #E8E8E8;
+  cursor:pointer;
+}
+
+
+body {
+  min-height: 100px;
+  padding-top: 70px;
+  background-color: #fdf6e3; // light background, solarized theme
+}
+
+.container {
+  width: 100%!important; //960px!important;
+}
+
+
+#clickdivThumb {
+  float: left;
+}
+
+#clickdivText {
+  padding-left: 100px;    
+}
+
+.clickdiv {
+  list-style-type: none;
+}
+
+.commentary{
+  position: fixed;
+  top: 135px;
+  bottom: 50px;
+  right: 50px;
+}
+
+.contacts {
+  width: 50%;
+  color: white;
+  background-color: #787878;
+  height:100%;
+  margin:50px auto;
+  border-radius:25px;
+  padding: 15px 20px 10px;
+  }
+
+
+
+
