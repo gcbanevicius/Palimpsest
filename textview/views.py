@@ -301,11 +301,13 @@ def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
 def get_author(text_name):
     if (text_name == "aeneid"): return "Virgil"
     elif (text_name == "gallic_war"): return "Caesar"
+    else: return "None" 
 
 
 def get_title(text_name):
     if (text_name == "aeneid"): return "The Aeneid"
     elif (text_name == "gallic_war"): return "Gallic Wars"
+    else: return "Text does not exist - Invalid URL" 
 
 def delete_comment(request, text_name=""):
     if request.user.is_authenticated():
