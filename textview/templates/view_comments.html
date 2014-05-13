@@ -5,10 +5,7 @@
 	<div class="row">
 		
         <div class="col-md-6">
-         {#  {% for i in text_left %} #}
-		  {#{i.text_field}#}
-         {#  <span id={{ i.0 }} class = 'linenumber' onclick="modal('{{i.0}}');"> {{ i.0 }} </span> &nbsp &nbsp &nbsp {{ i.2 }} <br> #}
-		  {# {% endfor %} #}
+
 
 
 		   {% for i in text_left%}
@@ -21,9 +18,7 @@
 	    </div>
 
 		<div class="col-md-6">
-	       {#{ gal_war_eng.text_field }#} 
-	       {%for i in text_right %}
-		   {#{i.text_field}#}
+
 		   {% if i.7%}
 		   		{%if user.id == i.4 %}
 

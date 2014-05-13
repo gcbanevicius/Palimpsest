@@ -16,7 +16,6 @@ urlpatterns = patterns('',
     url(r'(?P<text_name>[-\w]+)/edit_comment$', views.edit_comment, name='edit_comment'),
     url(r'edit_comment/(?P<text_name>[-\w]+)/$', views.edit_comment, name='edit_comment'),    
     url(r'^view_critical/(?P<text_name>[-\w]+)/(?P<isbn_num>[-\w]+:*[-\d]+[-\w]*)$', views.view_critical, name='view_critical'),
-    #url(r'^two_text', views.two_text, name='two_text')
     url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
 )
 
