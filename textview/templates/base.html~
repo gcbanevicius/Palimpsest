@@ -499,9 +499,13 @@ $(function ()
 
 
       function closefunction(id) {
+        //id = $(this).attr('id');
         var string = '#' + id;
         $(string).popover('hide');
         $(string).attr(id, "");
+        //$('.lat_word').popover('toggle');
+
+
       }
 
         function vocabLookup(word) {
@@ -540,6 +544,7 @@ $('#booksubmit').keypress( function( e ) {
   if (e.keyCode == 13) {
     e.preventDefault();
     $('#searchme').click();
+    //return false; 
   }
 })
 

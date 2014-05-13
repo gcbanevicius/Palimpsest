@@ -36,9 +36,9 @@ TEMPLATE_DIRS = (
 SECRET_KEY = 'p8sc+4g080hyg&^a(=*w7uq42q*wnuj7q-9lo2^#7cn2e3*y38'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']

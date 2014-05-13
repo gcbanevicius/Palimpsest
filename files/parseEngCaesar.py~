@@ -4,7 +4,7 @@ import sys
 
 def parseText(fileName):
     import xml.etree.ElementTree as ET
-    tree = ET.parse(fileName) #'Aeneid_English.xml')
+    tree = ET.parse(fileName)
     root = tree.getroot()
 
     books_raw = root.findall('text/body/div1')
@@ -16,7 +16,6 @@ def parseText(fileName):
         book_idx += 1
         chap_idx = 0
         tags = book_raw.findall('*')
-        #print tags, len(tags)
         book = []
         for tag in tags:
             if tag.tag == 'p': # only <p> tags have useful data	
@@ -24,39 +23,10 @@ def parseText(fileName):
                 lines = tag.itertext()
                 chap_text = ''
                 for line in lines:
-                    #print line, "!?!?"
-                    #book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
-					# WHY I STORE THE INDEX HERE ONLY TO NOT USE IT AND RECALC IT LATER IS A MYSTERY...
-					
-					# the new way (lol)... just get all the text
-					chap_text += line				
-                print chap_text
+					chap_text += line	
                 idx = str(book_idx) + '.' + str(chap_idx)
                 book.append( (chap_text, idx) )
-            # a bit extreme...
-            #else:
-            #    exit(1)
         books.append(book)
-
-	### OLD WAY ###
-    #books = []
-    #card_idx = 0
-    #for book_raw in books_raw:
-    #    lines = book_raw.findall('*')
-    #    book = []
-    ##card = []
-    #    for line in lines:
-    #        if line.tag == 'milestone':
-    #            card_idx += 1
-    #        elif line.find('milestone') is not None:
-    #            card_idx += 1
-    #        #print ET.tostring(line, encoding='utf_8', method='text')
-    #            book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
-    #        elif line.text:  #line.tag == "l":
-    #            book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
-    #    books.append(book)
-
-	
 
     import psycopg2
     try:
@@ -70,25 +40,12 @@ def parseText(fileName):
         
     for b in books:
         b_idx += 1
-    #path = str(b_idx)
-    #data = (path,)
-    #curs.execute("""INSERT INTO aen_lat (path) VALUES (%s);""", data)
-
-    #c_idx = 0
-    #for c in b:
-    #    c_idx += 1
-    #    path = str(b_idx)+'.'+str(c_idx)
-    #    data = (path,)
-    #    curs.execute("""INSERT INTO aen_lat (path) VALUES (%s);""", data)
-
         c_idx = 0
         for c in b:
             c_idx += 1
             chap_num += 1
-        #print c.find('l').text
-        #print l.text
             path = str(b_idx)+'.'+str(c_idx)
-            text = c #.text
+            text = c 
             data = (path, chap_num, c[0], chap_num, 'gallic_war')
             curs.execute("""INSERT INTO english VALUES (%s, %s, %s, %s, %s);""", data)
 
@@ -97,10 +54,8 @@ def parseText(fileName):
         conn.close()
 
 def main():
-    #if len(sys.argv) > 2:
-    #    print 'Takes one argument: file name to parse'
         
-    fileName = 'Gallic_War_English.xml' #sys.argv[1]
+    fileName = 'Gallic_War_English.xml'
     parseText(fileName)
 
 if __name__ == '__main__':

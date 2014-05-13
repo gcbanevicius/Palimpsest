@@ -288,7 +288,7 @@ def view_critical(request, text_name="", isbn_num='ISBN:1909254150'):
         return HttpResponseRedirect('/subscribers/signin')
 
 def get_author(text_name):
-    if (text_name == "aeneid"): return "Virgil"
+    if (text_name == "aeneid"): return "Vergil"
     elif (text_name == "gallic_war"): return "Caesar"
     else: return "None" 
 
