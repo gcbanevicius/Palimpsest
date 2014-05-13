@@ -35,7 +35,7 @@
                 <li>
                     <div class="col-md-8">
                         <div class="input-group">
-                            <!-- in a perfect world, I'd do this in AJAX, but the form action is what workd -->
+                            <!-- alternative solution to do this in AJAX, but the form action is what worked -->
                             <form action="" method="POST">{% csrf_token %}
                             {{ form.as_p }}
                                 <input type="text" class="form-control" name="range" placeholder="e.g. 1.10-1.15"/> <br/>
@@ -320,8 +320,7 @@
 
 
         function commentEdit() {
-            //alert(document.getElementById("commentedittext").innerHTML, linenum_global, commentid_global);
-            //alert(linenum_global);
+
 
         if ($('#editpublic').is(':checked')) {
             var is_pub = 1;
@@ -353,7 +352,7 @@
         }
 
         function commentDelete() {
-            //alert(commentid_global);
+
         var csrftoken = getCookie('csrftoken');
         $.ajaxSetup({
             crossDomain: false, // obviates need for sameOrigin test
@@ -407,8 +406,7 @@
 
         if (curr_mode == "vocab") {
             alert('sorry, this function is not yet available!')
-           // document.getElementById("vocabhead").innerHTML="Somehow look up vocab?";
-           // $('#vocab').modal();
+
 
         }
         }
@@ -550,7 +548,6 @@ $('#booksubmit').keypress( function( e ) {
   if (e.keyCode == 13) {
     e.preventDefault();
     $('#searchme').click();
-    //return false; 
   }
 })
 
@@ -619,7 +616,6 @@ $('#booksubmit').keypress( function( e ) {
             var thumbnail = document.createElement("img")
             thumbnail.style.float = "left";
 
-            //contain.setAttribute("class", "booklist")
 
             var listing = item.volumeInfo.title + '<br>';
 
