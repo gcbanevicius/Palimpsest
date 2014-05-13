@@ -15,7 +15,6 @@ def db_connect():
             DATABASES = {}
 
         if 'DATABASE_URL' in os.environ:
-            print os.environ['DATABASE_URL']
             url = urlparse.urlparse(os.environ['DATABASE_URL'])
 
             # Ensure default database exists.
@@ -35,20 +34,16 @@ def db_connect():
             if url.scheme == 'mysql':
                 DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
 
-            print DATABASES['default']
-
     except Exception:
         print 'Unexpected error:', sys.exc_info()
     
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname='simple_ltree'") # COMMENT BACK IN FOR LOCALHOST
         conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"
     curs = conn.cursor()
 
-    #if conn:
-    #    conn.close()
     return curs
 
 
@@ -61,7 +56,6 @@ def book(bk_start, text_name):
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
     lines = curs.fetchall()
-    #print lines
     return (lines, 0)
 
 def line(ln_start, text_name):
@@ -73,7 +67,6 @@ def line(ln_start, text_name):
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
     line = curs.fetchall()
-    #print line
     return (line, 0)
 
 def lineToLine(start, end, text_name):
@@ -86,12 +79,8 @@ def lineToLine(start, end, text_name):
     ln_end = int(end.split('.')[1])
 
     if int(bk_start) > int(bk_end):
-        print "Starting position is greater than ending position"
         rspStr = 'Invalid query: starting position greater than ending position.'
         return ( [('', '', rspStr, '', '')], -1 )
-
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, ln_end
 
     lines = []
 
@@ -107,7 +96,6 @@ def lineToLine(start, end, text_name):
     # if the lines only span one book
     if bk_start == bk_end:
         lines = lines[ln_start-1 : ln_end]
-        #print lines
         return (lines, 0)
 
     else:
@@ -134,26 +122,18 @@ def lineToLine(start, end, text_name):
         return ( [('', '', rspStr, '', '')], -1 )
     lines.extend(curs.fetchall()[:ln_end])
     
-    #print lines
     return (lines, 0)
 
 def bookToBook(start, end, text_name):
     curs = db_connect()
     
-    bk_start = int(start) #int(start.split('.')[0])
-    bk_end = int(end) #int(end.split('.')[0])
-
-    #ln_start = int(start.split('.')[1])
-    #ln_end = int(end.split('.')[1])
+    bk_start = int(start)
+    bk_end = int(end)
 
     # equality OK; strange to query one book as a range, but acceptable
     if int(bk_start) > int(bk_end):
-        print "Starting position is greater than ending position"
         rspStr = 'Invalid query: starting position greater than ending position.'
         return ( [('', '', rspStr, '', '')], -1 )
-
-    #print "Book range:", bk_start, bk_end
-    #print "Linerange:", ln_start, ln_end
 
     lines = []
 
@@ -168,7 +148,6 @@ def bookToBook(start, end, text_name):
     
     # if the lines only span one book
     if bk_start == bk_end:
-        #print lines
         return (lines, 0) 
 
     # if there's at least one full book between them
@@ -192,20 +171,18 @@ def bookToBook(start, end, text_name):
             
     lines.extend(curs.fetchall())
     
-    #print lines
     return (lines, 0)
 
 def startQuery(queryStr, text_name):
-    print '-', queryStr, '-'
 
     # should not occur
     if not queryStr:
-        print "Please input a single query or query range"
+        rspStr = 'Please input a query!'
+        return ( [('', '', rspStr, '', '')], -1 )
 
 
     query = queryStr.replace('-', ' ')
     q_list = query.split() # no options will do any whitespace
-    print q_list
     q_len = len(query.split())
 
     if q_len > 2:
@@ -234,7 +211,6 @@ def startQuery(queryStr, text_name):
     elif q_len == 1:
         if re.match(r'^\s*\d+\s*$', query):
             match = re.match(r'^\s*\d+\s*$', query)
-            print 'book'
             q_result = book(match.group(), text_name)
 
         elif re.match(r'^\s*\d+\.\d+\s*$', query):
@@ -242,17 +218,14 @@ def startQuery(queryStr, text_name):
             q_result = line(match.group(), text_name)
         
         else:
-            print 'no match...'
             rspStr = 'Please input a valid query!'
             return ( [('', '', rspStr, '', '')], -1 )
 
     else:
-        print "Should not be here." 
         rspStr = 'Please input a valid query!'
         return ( [('', '', rspStr, '', '')], -1 )
 
     if not q_result[0]:
-        print 'Null result!'
         rspStr = """Query returned no text, despite valid syntax.\n
                   Are you sure the lines you want... exist?"""
         return ( [('', '', rspStr, '', '')], -1 )
@@ -269,7 +242,6 @@ def insertComment(lineNum, commentText):
             DATABASES = {}
 
         if 'DATABASE_URL' in os.environ:
-            print os.environ['DATABASE_URL']
             url = urlparse.urlparse(os.environ['DATABASE_URL'])
 
             # Ensure default database exists.
@@ -289,14 +261,13 @@ def insertComment(lineNum, commentText):
             if url.scheme == 'mysql':
                 DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
 
-            print DATABASES['default']
 
     except Exception:
         print 'Unexpected error:', sys.exc_info()
  
 
     try:
-        #conn = psycopg2.connect("dbname='simple_ltree'") # user='gbanevic' host='localhost' password='password'")
+        #conn = psycopg2.connect("dbname='simple_ltree'") # COMMENT BACK IN FOR LOCALHOST
         conn = psycopg2.connect("dbname=%s user=%s password=%s host=%s " % (url.path[1:], url.username, url.password, url.hostname))
     except:
         print "Could not connect to database"

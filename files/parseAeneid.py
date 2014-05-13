@@ -4,7 +4,7 @@ import sys
 
 def parseText(fileName):
     import xml.etree.ElementTree as ET
-    tree = ET.parse(fileName) #('Aeneid_Latin.xml')
+    tree = ET.parse(fileName)
     root = tree.getroot()
 
     books_raw = root.findall('text/body/div1')
@@ -14,22 +14,13 @@ def parseText(fileName):
     for book_raw in books_raw:
         lines = book_raw.findall('*')
         book = []
-    #card = []
         for line in lines:
             if line.find('milestone') is not None or line.tag == 'milestone':
                 card_idx += 1
-            if line.text:  #line.tag == "l":
-            #print line.text
-            #card.append(line)
+            if line.text:
                 book.append( (ET.tostring(line, encoding='utf_8', method='text'), card_idx) )
-            #book.append(line)
-        #elif len(card) > 0:
-        #    book.append(card)
-        #    card = []
         books.append(book)
     
-#print book[1]
-#print book[1][1]
     import psycopg2
     try:
         conn = psycopg2.connect("dbname='simple_ltree' user='gbanevic' host='localhost' password='password'")
@@ -49,15 +40,6 @@ def parseText(fileName):
             path = str(b_idx)+'.'+str(l_idx)
             text = l[0]
             data = (path, line_num, l[0], l[1], 'aeneid')
-            #curs.execute("""INSERT INTO latin VALUES (%s, %s, %s, %s, %s);""", data) # % (path, text))
-
-# let's see if we can get our data back...
-    curs.execute("""SELECT * FROM aen_lat WHERE path <@ '2.7' """)
-    rows = curs.fetchall()
-#print rows
-    for row in rows:
-        if row[1]:
-            print row[1]
 
     conn.commit()
     if conn:

@@ -67,7 +67,6 @@ def index(request, text_name=""):
             return render_error(request, ('', '', '', '', ''), text_name)
 
     newtext = []
-    #print text
     for i in text:
         newtext.append((i[0], i[2].split()))
 
@@ -77,10 +76,8 @@ def index(request, text_name=""):
       'text_lines': newtext,
       'title' : get_title(text_name),
       'author': get_author(text_name)
-      #'error_mode': request.session['error_mode'] # pass in "error_mode", so we can choose correct layout
      })
 
-    #print text
     return HttpResponse(temp.render(c))
 
 
@@ -155,7 +152,6 @@ def add_comment(request, text_name=""):
             # NB POST['is_pub'] must be '1' for TRUE, '0' f`r FALSE
             if request.POST['is_pub'] == '1':
                 # if error mode engaged, go no further
-                #print "id = 0, public = t"
                 comment = Comment(book=int(path[0]), line=int(path[1]), user_id=request.user.id, public=1, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'], anonymous = 0)
             elif request.POST['is_pub'] == '2':
                 comment = Comment(book=int(path[0]), line=int(path[1]), user_id=request.user.id, public=1, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'], anonymous = 1)
@@ -163,26 +159,21 @@ def add_comment(request, text_name=""):
                 comment = Comment(book=int(path[0]), line=int(path[1]), user_id=request.user.id, public=0, text_name=request.POST['text_name'], comment_text=request.POST['comment_text'], anonymous = 0)
 
             comment.save()
-            #query.insertComment(request.POST['line'], request.POST['comment_text'])
 
 
         c = RequestContext(request, {
           'text_id': text_name,
-          'text_left': '',#Text.objects.all(), 
-          'text_right': '',#Text.objects.all()
+          'text_left': '',
+          'text_right': '',
           'title' : get_title(text_name),
           'author': get_author(text_name)
           })
-        
-        #print "print the user id!"
-        #print request.user.id
-        #print request.POST['is_pub']
+
 
         return HttpResponse(temp.render(c))
 
     else:
-    #    print '/subscribers/signin?next=%s' % request.get_full_path() 
-        return HttpResponseRedirect('/subscribers/signin') #?next=%s' % request.get_full_path() )    
+        return HttpResponseRedirect('/subscribers/signin')
 
 def view_comments(request, text_name=""):
     if request.user.is_authenticated():    
@@ -192,7 +183,6 @@ def view_comments(request, text_name=""):
         if request.method == 'POST':
             # set 'comment_type', since we know it's a POST
             if 'comment_type' in request.POST:
-                #print request.POST['comment_type'], 'hiya'
                 request.session['comment_view_mode'] = request.POST['comment_type']
 
             form = QueryForm(request.POST)
@@ -217,7 +207,6 @@ def view_comments(request, text_name=""):
         if error != 0:
             return render_error(request, text_left[0], text_name)
  
-        #print text_left
     ###  END get Latin text  ###
 
         # set view mode based on pre-stored var; else PUBLIC (1)
@@ -317,26 +306,20 @@ def delete_comment(request, text_name=""):
             comid = int(request.POST['comment_num'])
             comment = Comment.objects.get(id=comid)
             comment.delete()
-            #query.insertComment(request.POST['line'], request.POST['comment_text'])
-
 
         c = RequestContext(request, {
           'text_id': text_name,
-          'text_left': '',#Text.objects.all(), 
-          'text_right': '',#Text.objects.all()
+          'text_left': '',
+          'text_right': '',
           'title' : get_title(text_name),
           'author': get_author(text_name)
           })
-        
-        #print "print the user id!"
-        #print request.user.id
-        #print request.POST['is_pub']
+       
 
         return HttpResponse(temp.render(c))
 
     else:
-    #    print '/subscribers/signin?next=%s' % request.get_full_path() 
-        return HttpResponseRedirect('/subscribers/signin') #?next=%s' % request.get_full_path() )    
+        return HttpResponseRedirect('/subscribers/signin') 
 
 def edit_comment(request, text_name=""):
     if request.user.is_authenticated():
@@ -349,7 +332,6 @@ def edit_comment(request, text_name=""):
 
             if request.POST['is_pub'] == '1':
                 # if error mode engaged, go no further
-                #print "id = 0, public = t"
                 comment.public = 1
                 comment.anonymous = 0
             elif request.POST['is_pub'] == '2':
@@ -359,28 +341,22 @@ def edit_comment(request, text_name=""):
                 comment.public = 0
                 comment.anonymous = 0
 
-
-            #query.insertComment(request.POST['line'], request.POST['comment_text'])
             comment.save()
 
 
         c = RequestContext(request, {
           'text_id': text_name,
-          'text_left': '',#Text.objects.all(), 
-          'text_right': '',#Text.objects.all()
+          'text_left': '',
+          'text_right': '',
           'title' : get_title(text_name),
           'author': get_author(text_name)
           })
         
-        #print "print the user id!"
-        #print request.user.id
-        #print request.POST['is_pub']
 
         return HttpResponse(temp.render(c))
 
     else:
-    #    print '/subscribers/signin?next=%s' % request.get_full_path() 
-        return HttpResponseRedirect('/subscribers/signin') #?next=%s' % request.get_full_path() )    
+        return HttpResponseRedirect('/subscribers/signin') 
     
 
 
